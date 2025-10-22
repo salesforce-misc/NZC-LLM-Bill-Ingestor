@@ -6,6 +6,16 @@
 [![Net Zero Cloud](https://img.shields.io/badge/Net_Zero_Cloud-FFB000?style=for-the-badge&logo=salesforce&logoColor=white)](https://help.salesforce.com/s/articleView?id=sf.net_zero_cloud_intro.htm)
 [![Lightning](https://img.shields.io/badge/Lightning-1798C1?style=for-the-badge&logo=salesforce&logoColor=white)](https://developer.salesforce.com/docs/platform/lwc/guide)
 
+## 🚀 Quick Deploy
+
+<div align="center">
+
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/?owner=jvillalpando_sfemu&repo=NZC-LLM-Bill-Ingestor&branch=master)
+
+**One-click deployment to your Salesforce org**
+
+</div>
+
 ---
 
 ## ✨ Features
@@ -43,14 +53,34 @@ Before you begin, ensure you have the following:
 
 ### 🔧 Installation
 
-#### 1️⃣ Clone the Repository
+Choose your preferred deployment method:
+
+#### 🎯 Option 1: One-Click GitHub Deploy *(Recommended)*
+
+Click the **"Deploy to Salesforce"** button above for instant deployment to your org.
+
+#### 📦 Option 2: Workbench Deployment
+
+For environments where GitHub access is restricted:
+
+1. **Download** the pre-built deployment package: [NZC-LLM-Bill-Ingestor-Deploy.zip](./NZC-LLM-Bill-Ingestor-Deploy.zip)
+2. **Navigate** to [Salesforce Workbench](https://workbench.developerforce.com/login.php)
+3. **Login** to your target org
+4. **Go to** Migration → Deploy
+5. **Upload** the zip file and deploy
+
+#### 🛠️ Option 3: Salesforce CLI Deployment
+
+For developers who prefer command-line tools:
+
+##### 3.1 Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/NZC-LLM-Bill-Ingestor.git
+git clone https://github.com/jvillalpando_sfemu/NZC-LLM-Bill-Ingestor.git
 cd NZC-LLM-Bill-Ingestor
 ```
 
-#### 2️⃣ Authorize Your Org
+##### 3.2 Authorize Your Org
 
 ```bash
 # For sandbox/production orgs
@@ -60,7 +90,7 @@ sfdx auth:web:login --setalias MyOrg --instanceurl https://test.salesforce.com
 sfdx auth:web:login --setalias MyOrg
 ```
 
-#### 3️⃣ Deploy the Metadata
+##### 3.3 Deploy the Metadata
 
 ```bash
 # Deploy all components
@@ -70,12 +100,13 @@ sfdx force:source:deploy -p force-app -u MyOrg
 cci flow run dev_org --org dev
 ```
 
-#### 4️⃣ Configure Einstein AI
+#### ⚡ Post-Deployment Configuration
 
-Ensure your org has:
-- Einstein AI Platform enabled
-- Prompt Template Builder access
-- Required Einstein credits available
+After deploying with any method above, ensure your org has:
+- ✅ **Einstein AI Platform** enabled
+- ✅ **Prompt Template Builder** access  
+- ✅ **Required Einstein credits** available
+- ✅ **Net Zero Cloud** licensed and configured
 
 ---
 
