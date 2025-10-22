@@ -179,7 +179,8 @@
 
 .ai-actions-group {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
     margin-top: 0.65rem;
 }
 
@@ -204,4 +205,28 @@
     20% { opacity: 1; }
     80% { opacity: 1; }
     100% { opacity: 0; }
+}
+
+.ai-loader-small {
+    border: 3px solid #C8E6C9; /* Light green spinner track */
+    border-top: 3px solid #4CAF50; /* Medium green spinner */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1.2s linear infinite;
+    margin-right: 0.5rem;
+}
+
+.ai-success {
+    background: rgba(232, 245, 233, 0.9); /* Light green background for success */
+    color: #2E7D32; /* Dark green text */
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    border: 1px solid #C8E6C9; /* Light green border */
+    box-shadow: 0 1px 4px rgba(46, 125, 50, 0.08);
 }

@@ -3,6 +3,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import analyzeFiles from '@salesforce/apex/AIFileAnalysisController.analyzeFiles';
 import getRelatedFiles from '@salesforce/apex/AIFileAnalysisController.getRelatedFiles';
 import getOrgBaseUrl from '@salesforce/apex/AIFileAnalysisController.getOrgBaseUrl';
+import createEnergyUseRecords from '@salesforce/apex/AIFileAnalysisController.createEnergyUseRecords';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class AIFileAnalysisController extends NavigationMixin(LightningElement) {
@@ -15,12 +16,15 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
     @track errorMessage = '';
     @track isLoading = false;
     @track disableAnalyzeButton = true;
+    @track disableCreateRecordsButton = true;
+    @track isCreatingRecords = false;
 
     @track showActionToast = false;
     @track actionToastMessage = '';
 
     @track fileOptions = [];
     @track orgBaseUrl;
+    @track createdRecordIds = [];
 
     _wiredFilesResult;
 
@@ -84,12 +88,18 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         return this.recordId;
     }
 
+    get pluralSuffix() {
+        return this.createdRecordIds.length !== 1 ? 's' : '';
+    }
+
     resetSelectionState() {
         this.aiResult = '';
         this.errorMessage = '';
         this.uploadedFileId = null;
         this.uploadedFileName = null;
         this.disableAnalyzeButton = true;
+        this.disableCreateRecordsButton = true;
+        this.createdRecordIds = [];
     }
 
     fileUploadHandler(event) {
@@ -123,10 +133,12 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         try {
             const result = await analyzeFiles({ fileId: this.uploadedFileId });
             this.aiResult = result;
+            this.disableCreateRecordsButton = false; // Enable create records button once analysis is complete
             this.showToastMessage('AI Analysis Complete', 'The AI-powered analysis is now ready!', 'success');
         } catch (err) {
             this.errorMessage = (err && err.body && err.body.message) || 'Error analyzing file. Please try again.';
             this.showToastMessage('Analysis Error', this.errorMessage, 'error');
+            this.disableCreateRecordsButton = true;
         } finally {
             this.isLoading = false;
         }
@@ -136,6 +148,42 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         // Copy the raw result, not the formatted version
         navigator.clipboard.writeText(this.aiResult);
         this.showSimpleActionToast('Copied to clipboard!');
+    }
+
+    async handleCreateRecords() {
+        if (!this.aiResult) {
+            this.showToastMessage('No Data', 'Please analyze a file first before creating records.', 'warning');
+            return;
+        }
+        
+        this.isCreatingRecords = true;
+        this.errorMessage = '';
+        
+        try {
+            const createdIds = await createEnergyUseRecords({ 
+                jsonData: this.aiResult, 
+                recordId: this.recordId 
+            });
+            
+            this.createdRecordIds = createdIds;
+            
+            if (createdIds && createdIds.length > 0) {
+                const recordCount = createdIds.length;
+                const message = recordCount === 1 
+                    ? `Successfully created 1 Energy Use record!` 
+                    : `Successfully created ${recordCount} Energy Use records!`;
+                this.showToastMessage('Success', message, 'success');
+                this.showSimpleActionToast(`${recordCount} record${recordCount !== 1 ? 's' : ''} created successfully!`);
+            } else {
+                this.showToastMessage('No Records Created', 'No valid data found to create Energy Use records.', 'warning');
+            }
+        } catch (err) {
+            const errorMessage = (err && err.body && err.body.message) || 'Error creating Energy Use records. Please try again.';
+            this.errorMessage = errorMessage;
+            this.showToastMessage('Creation Error', errorMessage, 'error');
+        } finally {
+            this.isCreatingRecords = false;
+        }
     }
 
     handleStartFlow() {

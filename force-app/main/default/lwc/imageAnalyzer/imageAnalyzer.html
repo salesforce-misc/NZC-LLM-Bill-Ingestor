@@ -114,12 +114,36 @@
                 </template>
             </div>
 
-            <!-- Actions section remains the same -->
+            <!-- Actions section with new Create Records button -->
             <div class="ai-actions-group">
                 <lightning-button-group>
                     <lightning-button variant="neutral" label="Copy" icon-name="utility:copy" onclick={handleCopyToClipboard}></lightning-button>
-                    <lightning-button variant="neutral" label="Create EUR" icon-name="utility:flow" onclick={handleStartFlow}></lightning-button>
+                    <lightning-button 
+                        variant="success" 
+                        label="Create Energy Records" 
+                        icon-name="utility:add" 
+                        onclick={handleCreateRecords}
+                        disabled={disableCreateRecordsButton}>
+                    </lightning-button>
+                    <lightning-button variant="neutral" label="Create EUR (Flow)" icon-name="utility:flow" onclick={handleStartFlow}></lightning-button>
                 </lightning-button-group>
+                
+                <!-- Loading indicator for record creation -->
+                <template if:true={isCreatingRecords}>
+                    <div class="ai-loading slds-m-top_small">
+                        <div class="ai-loader-small"></div>
+                        <span class="ai-analyzing">Creating energy use records...</span>
+                    </div>
+                </template>
+                
+                <!-- Success message showing created record count -->
+                <template if:true={createdRecordIds.length}>
+                    <div class="ai-success slds-m-top_small">
+                        <lightning-icon icon-name="utility:success" size="x-small"></lightning-icon>
+                        <span>Successfully created {createdRecordIds.length} Energy Use record{createdRecordIds.length}{pluralSuffix}!</span>
+                    </div>
+                </template>
+                
                 <template if:true={showActionToast}>
                     <div class="ai-action-toast">{actionToastMessage}</div>
                 </template>
