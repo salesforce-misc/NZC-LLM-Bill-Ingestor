@@ -1,12 +1,14 @@
 .ai-glass-card {
-    max-width: 430px;
-    margin: 2.5rem auto 0 auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 2.5rem 0 0 0;
     background: rgba(255,255,255,0.97);
     border-radius: 2rem;
     box-shadow: 0 8px 24px rgba(46, 125, 50, 0.07), 0 1.5px 6px rgba(46, 125, 50, 0.04);
     padding: 2.2rem 2rem 2rem 2rem;
     backdrop-filter: blur(8px);
     border: 1.5px solid #E8F5E9; /* Light green border */
+    box-sizing: border-box;
 }
 
 .ai-header {
@@ -242,19 +244,30 @@
     color: #0070d2;
 }
 
+.ai-result {
+    width: 100%;
+}
+
 .ai-result-single {
+    width: 100%;
     margin-bottom: 1rem;
 }
 
 .ai-result-array {
+    width: 100%;
     margin-bottom: 1rem;
 }
 
 .ai-result-datatable {
+    width: 100%;
     margin-top: 1rem;
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ai-result-datatable lightning-datatable {
+    width: 100%;
 }
 
 /* Custom styling for the datatable */
@@ -266,6 +279,18 @@
 .ai-result-datatable lightning-datatable {
     --slds-c-datatable-cell-spacing-block: 0.75rem;
     --slds-c-datatable-cell-spacing-inline: 1rem;
+}
+
+/* Ensure tables use full width */
+.ai-result-table {
+    width: 100%;
+    table-layout: auto;
+}
+
+.ai-result-table th,
+.ai-result-table td {
+    word-wrap: break-word;
+    max-width: 200px;
 }
 
 /* Responsive behavior for small screens */
