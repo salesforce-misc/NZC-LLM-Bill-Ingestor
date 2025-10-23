@@ -250,65 +250,28 @@
     margin-bottom: 1rem;
 }
 
-.ai-result-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
+.ai-result-datatable {
     margin-top: 1rem;
-}
-
-.ai-result-card {
-    background: #ffffff;
-    border: 1px solid #e0e5ee;
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease;
 }
 
-.ai-result-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+/* Custom styling for the datatable */
+.ai-datatable {
+    border-radius: 0.5rem;
 }
 
-.ai-result-card-header {
-    background: #f7f9fb;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e0e5ee;
+/* Ensure proper spacing and readability */
+.ai-result-datatable lightning-datatable {
+    --slds-c-datatable-cell-spacing-block: 0.75rem;
+    --slds-c-datatable-cell-spacing-inline: 1rem;
 }
 
-.ai-result-card-title {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #0070d2;
-}
-
-.ai-result-card-body {
-    padding: 0;
-}
-
-.ai-result-card-table {
-    margin: 0;
-    border: none;
-}
-
-.ai-result-card-table tbody tr:last-child td,
-.ai-result-card-table tbody tr:last-child th {
-    border-bottom: none;
-}
-
-/* Responsive design for cards */
+/* Responsive behavior for small screens */
 @media (max-width: 768px) {
-    .ai-result-cards {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-    }
-    
-    .ai-result-card-header {
-        padding: 0.5rem 0.75rem;
-    }
-    
-    .ai-result-card-title {
-        font-size: 0.9rem;
+    .ai-result-datatable {
+        margin-top: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 }

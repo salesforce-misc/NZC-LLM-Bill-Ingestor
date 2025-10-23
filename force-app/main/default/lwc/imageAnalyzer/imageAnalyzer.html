@@ -112,33 +112,25 @@
                     </div>
                 </template>
 
-                <!-- Display array of objects result -->
+                <!-- Display array of objects result using lightning-datatable -->
                 <template if:true={isArrayResult}>
                     <div class="ai-result-array">
                         <h3 class="ai-result-title">
                             <lightning-icon icon-name="utility:bot" size="small"></lightning-icon>
-                            Analysis Results ({resultData.length} items found)
+                            Analysis Results ({arrayItemCount} items found)
                         </h3>
-                        <div class="ai-result-cards">
-                            <template for:each={resultData} for:item="item">
-                                <div key={item.id} class="ai-result-card">
-                                    <div class="ai-result-card-header">
-                                        <h4 class="ai-result-card-title">Item {item.index}</h4>
-                                    </div>
-                                    <div class="ai-result-card-body">
-                                        <table class="slds-table slds-table_cell-buffer ai-result-card-table">
-                                            <tbody>
-                                                <template for:each={item.fields} for:item="field">
-                                                    <tr key={field.id}>
-                                                        <th scope="row" class="ai-result-key">{field.label}</th>
-                                                        <td class="ai-result-value">{field.value}</td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </template>
+                        <div class="ai-result-datatable">
+                            <lightning-datatable
+                                data={resultData}
+                                columns={tableColumns}
+                                key-field="Id"
+                                hide-checkbox-column="true"
+                                show-row-number-column="false"
+                                resize-column-disabled="false"
+                                sorted-direction="asc"
+                                sorted-by="rowIndex"
+                                class="ai-datatable">
+                            </lightning-datatable>
                         </div>
                     </div>
                 </template>

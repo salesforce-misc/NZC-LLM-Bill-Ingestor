@@ -57,29 +57,48 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
             
             // Handle array of objects
             if (Array.isArray(parsed) && parsed.length > 0) {
+                // Prepare data for lightning-datatable
+                const tableData = parsed.map((item, index) => {
+                    if (typeof item === 'object' && item !== null) {
+                        // Add an ID and index to each row
+                        return {
+                            Id: `item-${index}`,
+                            rowIndex: index + 1,
+                            ...item
+                        };
+                    }
+                    // Handle primitive values in array
+                    return {
+                        Id: `item-${index}`,
+                        rowIndex: index + 1,
+                        value: item
+                    };
+                });
+
+                // Generate columns dynamically based on the first object
+                let columns = [
+                    { label: '#', fieldName: 'rowIndex', type: 'number', fixedWidth: 50 }
+                ];
+
+                if (tableData.length > 0) {
+                    const firstItem = tableData[0];
+                    Object.keys(firstItem).forEach(key => {
+                        if (key !== 'Id' && key !== 'rowIndex') {
+                            const label = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                            columns.push({
+                                label: label,
+                                fieldName: key,
+                                type: 'text',
+                                wrapText: true
+                            });
+                        }
+                    });
+                }
+
                 return {
                     type: 'array',
-                    data: parsed.map((item, index) => {
-                        if (typeof item === 'object' && item !== null) {
-                            return {
-                                id: `item-${index}`,
-                                index: index + 1,
-                                fields: Object.keys(item).map(key => {
-                                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                                    return {
-                                        id: key,
-                                        label: label,
-                                        value: item[key]
-                                    };
-                                })
-                            };
-                        }
-                        return {
-                            id: `item-${index}`,
-                            index: index + 1,
-                            fields: [{ id: 'value', label: 'Value', value: item }]
-                        };
-                    })
+                    data: tableData,
+                    columns: columns
                 };
             }
             
@@ -109,6 +128,20 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
      */
     get resultData() {
         return this.formattedResult ? this.formattedResult.data : null;
+    }
+
+    /**
+     * Helper getter to get columns for lightning-datatable
+     */
+    get tableColumns() {
+        return this.formattedResult && this.formattedResult.columns ? this.formattedResult.columns : [];
+    }
+
+    /**
+     * Helper getter to get the count of items in array result  
+     */
+    get arrayItemCount() {
+        return this.isArrayResult && this.resultData ? this.resultData.length : 0;
     }
 
     @wire(getOrgBaseUrl)
