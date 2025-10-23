@@ -30,7 +30,7 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
 
     /**
      * NEW: A getter that attempts to parse the AI result as JSON.
-     * If successful, it formats the data into a key-value array for display.
+     * If successful, it formats the data for display (handles both objects and arrays).
      * If not, it returns null, and the component will fall back to displaying raw text.
      */
     get formattedResult() {
@@ -39,23 +39,76 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
             const cleanedString = this.aiResult.replace(/```json\n?|\n?```/g, '').trim();
             const parsed = JSON.parse(cleanedString);
             
-            // Ensure it's an object before processing
+            // Handle single object
             if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-                return Object.keys(parsed).map(key => {
-                    // Create a more readable label from the JSON key
-                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                    return {
-                        id: key,
-                        label: label,
-                        value: parsed[key]
-                    };
-                });
+                return {
+                    type: 'single',
+                    data: Object.keys(parsed).map(key => {
+                        // Create a more readable label from the JSON key
+                        const label = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                        return {
+                            id: key,
+                            label: label,
+                            value: parsed[key]
+                        };
+                    })
+                };
             }
-            return null; // It's valid JSON, but not an object we can format (e.g., just a string or number)
+            
+            // Handle array of objects
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return {
+                    type: 'array',
+                    data: parsed.map((item, index) => {
+                        if (typeof item === 'object' && item !== null) {
+                            return {
+                                id: `item-${index}`,
+                                index: index + 1,
+                                fields: Object.keys(item).map(key => {
+                                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                                    return {
+                                        id: key,
+                                        label: label,
+                                        value: item[key]
+                                    };
+                                })
+                            };
+                        }
+                        return {
+                            id: `item-${index}`,
+                            index: index + 1,
+                            fields: [{ id: 'value', label: 'Value', value: item }]
+                        };
+                    })
+                };
+            }
+            
+            return null; // It's valid JSON, but not a format we can display
         } catch (e) {
             // If parsing fails, it's not JSON. Return null.
             return null;
         }
+    }
+
+    /**
+     * Helper getter to check if the result is a single object
+     */
+    get isSingleResult() {
+        return this.formattedResult && this.formattedResult.type === 'single';
+    }
+
+    /**
+     * Helper getter to check if the result is an array
+     */
+    get isArrayResult() {
+        return this.formattedResult && this.formattedResult.type === 'array';
+    }
+
+    /**
+     * Helper getter to get the actual data for display
+     */
+    get resultData() {
+        return this.formattedResult ? this.formattedResult.data : null;
     }
 
     @wire(getOrgBaseUrl)

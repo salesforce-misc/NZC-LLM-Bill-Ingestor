@@ -92,19 +92,57 @@
         <!-- NEW: Updated AI Analysis Result Section -->
         <template if:true={aiResult}>
             <div class="ai-result">
-                <!-- If the result is formatted (is JSON), display the table -->
-                <template if:true={formattedResult}>
-                    <table class="slds-table slds-table_cell-buffer slds-table_bordered ai-result-table">
-                        <tbody>
-                            <template for:each={formattedResult} for:item="item">
-                                <tr key={item.id}>
-                                    <th scope="row" class="ai-result-key">{item.label}</th>
-                                    <td class="ai-result-value">{item.value}</td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
+                <!-- Display single object result -->
+                <template if:true={isSingleResult}>
+                    <div class="ai-result-single">
+                        <h3 class="ai-result-title">
+                            <lightning-icon icon-name="utility:bot" size="small"></lightning-icon>
+                            Analysis Result
+                        </h3>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered ai-result-table">
+                            <tbody>
+                                <template for:each={resultData} for:item="item">
+                                    <tr key={item.id}>
+                                        <th scope="row" class="ai-result-key">{item.label}</th>
+                                        <td class="ai-result-value">{item.value}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
                 </template>
+
+                <!-- Display array of objects result -->
+                <template if:true={isArrayResult}>
+                    <div class="ai-result-array">
+                        <h3 class="ai-result-title">
+                            <lightning-icon icon-name="utility:bot" size="small"></lightning-icon>
+                            Analysis Results ({resultData.length} items found)
+                        </h3>
+                        <div class="ai-result-cards">
+                            <template for:each={resultData} for:item="item">
+                                <div key={item.id} class="ai-result-card">
+                                    <div class="ai-result-card-header">
+                                        <h4 class="ai-result-card-title">Item {item.index}</h4>
+                                    </div>
+                                    <div class="ai-result-card-body">
+                                        <table class="slds-table slds-table_cell-buffer ai-result-card-table">
+                                            <tbody>
+                                                <template for:each={item.fields} for:item="field">
+                                                    <tr key={field.id}>
+                                                        <th scope="row" class="ai-result-key">{field.label}</th>
+                                                        <td class="ai-result-value">{field.value}</td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
                 <!-- Otherwise, fall back to the original rich text display -->
                 <template if:false={formattedResult}>
                     <div class="ai-result-raw">
