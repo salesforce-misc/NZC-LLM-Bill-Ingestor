@@ -1,0 +1,153 @@
+/* Main container */
+.detail-container {
+    margin-top: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #e0e5ee;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header styling */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, #f7f9fb 0%, #e8f4fd 100%);
+    border-bottom: 1px solid #e0e5ee;
+}
+
+.detail-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0070d2;
+}
+
+.detail-close-btn {
+    transition: all 0.2s ease;
+}
+
+.detail-close-btn:hover {
+    background-color: rgba(0, 112, 210, 0.1);
+    border-radius: 50%;
+}
+
+/* Content area */
+.detail-content {
+    padding: 1.25rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* Individual field styling */
+.detail-field {
+    background: #fafbfc;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #0070d2;
+    transition: all 0.2s ease;
+}
+
+.detail-field:hover {
+    background: #f4f6f9;
+    border-left-color: #005fb2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 112, 210, 0.1);
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5f6368;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.375rem;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #202124;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+/* Empty state styling */
+.detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #5f6368;
+    text-align: center;
+}
+
+.detail-empty lightning-icon {
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.detail-empty p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .detail-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .detail-content {
+        padding: 1rem;
+    }
+    
+    .detail-field {
+        padding: 0.75rem;
+    }
+    
+    .detail-title {
+        font-size: 0.9rem;
+    }
+}
+
+/* Special styling for key fields */
+.detail-field:has(.detail-label:contains("Account")) {
+    border-left-color: #28a745;
+}
+
+.detail-field:has(.detail-label:contains("Due Date")) {
+    border-left-color: #ffc107;
+}
+
+.detail-field:has(.detail-label:contains("Amount")) {
+    border-left-color: #dc3545;
+}

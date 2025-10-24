@@ -135,36 +135,12 @@
                             </lightning-datatable>
                         </div>
 
-                        <!-- Detail View Section -->
-                        <template if:true={showDetailView}>
-                            <div class="ai-detail-view">
-                                <div class="ai-detail-header">
-                                    <h4 class="ai-detail-title">
-                                        <lightning-icon icon-name="utility:preview" size="small"></lightning-icon>
-                                        Record Details
-                                    </h4>
-                                    <lightning-button-icon 
-                                        icon-name="utility:close" 
-                                        variant="bare" 
-                                        onclick={handleCloseDetails}
-                                        alternative-text="Close Details"
-                                        title="Close Details">
-                                    </lightning-button-icon>
-                                </div>
-                                <div class="ai-detail-content">
-                                    <template if:true={selectedRowData}>
-                                        <div class="ai-detail-grid">
-                                            <template for:each={detailFields} for:item="field">
-                                                <div key={field.key} class="ai-detail-field">
-                                                    <div class="ai-detail-label">{field.label}</div>
-                                                    <div class="ai-detail-value">{field.value}</div>
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </template>
+                        <!-- Dedicated Detail Component -->
+                        <c-energy-record-detail 
+                            record-data={selectedRowData}
+                            show-component={showDetailView}
+                            onclosedetail={handleCloseDetails}>
+                        </c-energy-record-detail>
                     </div>
                 </template>
 

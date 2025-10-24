@@ -163,26 +163,6 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         return this.isArrayResult && this.resultData ? this.resultData.length : 0;
     }
 
-    /**
-     * Helper getter to prepare detail fields for display
-     */
-    get detailFields() {
-        if (!this.selectedRowData) return [];
-        
-        const fields = [];
-        Object.keys(this.selectedRowData).forEach(key => {
-            if (key !== 'Id' && key !== 'rowIndex') {
-                const label = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                fields.push({
-                    key: key,
-                    label: label,
-                    value: this.selectedRowData[key] || 'N/A'
-                });
-            }
-        });
-        
-        return fields;
-    }
 
     @wire(getOrgBaseUrl)
     wiredOrgUrl({ error, data }) {
@@ -342,10 +322,15 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
     }
 
     handleRowSelection(event) {
+        console.log('🔥 Row selection event fired!', event.detail);
         const selectedRows = event.detail.selectedRows;
-        if (selectedRows.length > 0) {
+        console.log('🔥 Selected rows:', selectedRows);
+        
+        if (selectedRows && selectedRows.length > 0) {
+            console.log('🔥 First selected row:', selectedRows[0]);
             this.handleShowDetails(selectedRows[0]);
         } else {
+            console.log('🔥 No rows selected, hiding detail view');
             this.showDetailView = false;
             this.selectedRowData = null;
         }
@@ -357,7 +342,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         this.showDetailView = true;
     }
 
-    handleCloseDetails() {
+    handleCloseDetails(event) {
+        console.log('🔥 Close detail event received:', event?.detail);
         this.showDetailView = false;
         this.selectedRowData = null;
     }
