@@ -131,7 +131,9 @@
                                 sorted-direction="asc"
                                 sorted-by="rowIndex"
                                 class="ai-datatable"
-                                onrowselection={handleRowSelection}>
+                                max-row-selection="1"
+                                onrowselection={handleRowSelection}
+                                onclick={handleTableClick}>
                             </lightning-datatable>
                         </div>
 

@@ -27,6 +27,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
     @track createdRecordIds = [];
     @track selectedRowData = null;
     @track showDetailView = false;
+    @track _formattedResult = null;
+    _lastAiResult = '';
 
     _wiredFilesResult;
 
@@ -36,6 +38,19 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
      * If not, it returns null, and the component will fall back to displaying raw text.
      */
     get formattedResult() {
+        // Cache the result to avoid excessive processing
+        if (this._formattedResult !== null && this._lastAiResult === this.aiResult) {
+            return this._formattedResult;
+        }
+        
+        if (!this.aiResult) {
+            console.log('🚀 DEBUG: formattedResult called but no aiResult');
+            this._formattedResult = null;
+            return null;
+        }
+        
+        console.log('🚀 DEBUG: Processing formattedResult (first time or aiResult changed)');
+        
         try {
             // Clean the string: The AI might wrap the JSON in ```json ... ```
             const cleanedString = this.aiResult.replace(/```json\n?|\n?```/g, '').trim();
@@ -48,7 +63,7 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
             
             // Handle single object
             if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-                return {
+                this._formattedResult = {
                     type: 'single',
                     data: Object.keys(parsed).map(key => {
                         // Create a more readable label from the JSON key
@@ -60,6 +75,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                         };
                     })
                 };
+                this._lastAiResult = this.aiResult;
+                return this._formattedResult;
             }
             
             // Handle array of objects
@@ -110,20 +127,25 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                     });
                 }
 
-                const result = {
+                this._formattedResult = {
                     type: 'array',
                     data: tableData,
                     columns: columns
                 };
-                console.log('✅ Debug - Returning array result:', result);
-                return result;
+                console.log('✅ Debug - Returning cached array result:', this._formattedResult);
+                this._lastAiResult = this.aiResult;
+                return this._formattedResult;
             }
             
+            this._formattedResult = null;
+            this._lastAiResult = this.aiResult;
             return null; // It's valid JSON, but not a format we can display
         } catch (e) {
             // If parsing fails, it's not JSON. Return null.
             console.error('❌ Debug - JSON parsing failed:', e.message);
             console.error('❌ Debug - Original string:', this.aiResult);
+            this._formattedResult = null;
+            this._lastAiResult = this.aiResult;
             return null;
         }
     }
@@ -208,6 +230,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         this.createdRecordIds = [];
         this.selectedRowData = null;
         this.showDetailView = false;
+        this._formattedResult = null;
+        this._lastAiResult = '';
     }
 
     fileUploadHandler(event) {
@@ -333,6 +357,29 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
             console.log('🔥 No rows selected, hiding detail view');
             this.showDetailView = false;
             this.selectedRowData = null;
+        }
+    }
+
+    handleTableClick(event) {
+        console.log('🔥 Table click event fired!', event.detail);
+        // Alternative approach: detect clicks on table rows
+        const target = event.target;
+        console.log('🔥 Click target:', target);
+        
+        // Try to find the row data
+        if (target && target.closest) {
+            const row = target.closest('tr[data-row-key-value]');
+            if (row) {
+                const rowId = row.getAttribute('data-row-key-value');
+                console.log('🔥 Clicked row ID:', rowId);
+                
+                // Find the row data from our resultData
+                const rowData = this.resultData?.find(item => item.Id === rowId);
+                if (rowData) {
+                    console.log('🔥 Found row data:', rowData);
+                    this.handleShowDetails(rowData);
+                }
+            }
         }
     }
 
