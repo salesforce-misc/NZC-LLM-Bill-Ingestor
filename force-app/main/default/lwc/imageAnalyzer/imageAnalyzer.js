@@ -128,15 +128,17 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                     
                     // Add custom button column for viewing details
                     columns.push({
-                        type: 'action',
+                        label: 'Details',
+                        type: 'button',
                         typeAttributes: {
-                            rowActions: [
-                                {
-                                    label: 'View Details',
-                                    name: 'view_details',
-                                    iconName: 'utility:preview'
-                                }
-                            ]
+                            label: 'View',
+                            name: 'view_details',
+                            title: 'Click to view full details',
+                            disabled: false,
+                            value: 'view',
+                            iconName: 'utility:preview',
+                            iconPosition: 'left',
+                            variant: 'brand'
                         },
                         fixedWidth: 90
                     });
@@ -351,16 +353,26 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         window.open(flowUrl, '_blank');
     }
 
-    handleRowAction(event) {
-        console.log('🔥 Row action event fired!', event.detail);
-        const actionName = event.detail.action.name;
-        const row = event.detail.row;
+    handleCellChange(event) {
+        console.log('🔥 Button click event fired!', event.detail);
+        const draftValues = event.detail.draftValues;
         
-        console.log('🔥 Action name:', actionName);
-        console.log('🔥 Row data:', row);
-        
-        if (actionName === 'view_details') {
-            this.handleShowDetails(row);
+        if (draftValues && draftValues.length > 0) {
+            // For button clicks, we need to find the row that was clicked
+            const changedRow = draftValues[0];
+            console.log('🔥 Button clicked on row with ID:', changedRow.Id);
+            
+            // Find the full row data by ID
+            const fullRowData = this.resultData.find(item => item.Id === changedRow.Id);
+            
+            if (fullRowData) {
+                console.log('🔥 Full row data found:', fullRowData);
+                this.handleShowDetails(fullRowData);
+            } else {
+                console.error('❌ Could not find row data for ID:', changedRow.Id);
+            }
+        } else {
+            console.error('❌ No draft values in button click event');
         }
     }
 
