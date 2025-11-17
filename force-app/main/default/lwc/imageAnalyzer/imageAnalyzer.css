@@ -1,6 +1,6 @@
 .ai-glass-card {
     width: 100%;
-    max-width: 100%;
+    max-width: 400px; /* Constrain width for thin column design */
     margin: 2.5rem 0 0 0;
     background: rgba(255,255,255,0.97);
     border-radius: 2rem;
