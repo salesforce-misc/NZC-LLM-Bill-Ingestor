@@ -87,7 +87,6 @@ public with sharing class AIFileAnalysisController {
             return result.generations[0].text;
 
         } catch (Exception e) {
-            System.debug('Error calling Einstein: ' + e.getMessage());
             return 'Error: ' + e.getMessage();
         }
     }
@@ -113,7 +112,6 @@ public with sharing class AIFileAnalysisController {
             return insertEnergyUseRecords(recordsToInsert);
             
         } catch (Exception e) {
-            System.debug('Error creating energy use records: ' + e.getMessage());
             throw new AuraHandledException('Error creating energy use records: ' + e.getMessage());
         }
     }
@@ -257,18 +255,18 @@ public with sharing class AIFileAnalysisController {
                         if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
                             parsedDate = Date.newInstance(year, month, day);
                         } else {
-                            System.debug('Invalid date values: month=' + month + ', day=' + day + ', year=' + year);
+                            // Invalid date values - skip setting date
                         }
                     }
                     
                     if (parsedDate != null) {
                         energyUseRecord.StartDate = parsedDate;
                     } else {
-                        System.debug('Could not parse date: ' + dueDate + ' - using current date as fallback');
+                        // Could not parse date - using current date as fallback
                         energyUseRecord.StartDate = Date.today();
                     }
                 } catch (Exception dateEx) {
-                    System.debug('Error parsing date: ' + dueDate + ' - ' + dateEx.getMessage() + ' - using current date as fallback');
+                    // Error parsing date - using current date as fallback
                     energyUseRecord.StartDate = Date.today(); // Fallback to today's date
                 }
             }
@@ -276,7 +274,6 @@ public with sharing class AIFileAnalysisController {
             return energyUseRecord;
             
         } catch (Exception e) {
-            System.debug('Error creating energy use record: ' + e.getMessage());
             return null;
         }
     }

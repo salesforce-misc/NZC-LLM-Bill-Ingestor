@@ -86,10 +86,8 @@ public class MultipleJSONParser {
     private static String mapParser(String fieldName, Object jsonObject) {
         Object paramObject = null;
         Object JSONString = JSON.serialize(jsonObject);
-        System.debug('Parsing: ' + JSONString);
         
         if (jsonObject instanceof List<Object> && fieldName != '') {
-            System.debug('Detected as List');
             List<Object> theList = (List<Object>)jsonObject;
             Integer enclosureIndex = fieldName.indexOf(']');
             Integer listIndex = Integer.valueOf(fieldName.substring(1, enclosureIndex));
@@ -102,7 +100,6 @@ public class MultipleJSONParser {
         }
         
         if (jsonObject instanceof Map<String, Object> && fieldName != '') {
-            System.debug('Detected as Map');
             Map<String, Object> theMap = (Map<String, Object>)jsonObject;
             Integer dotIndex = fieldName.indexOf('.');
             if (dotIndex < 0) { dotIndex = fieldName.length(); }
@@ -134,10 +131,9 @@ public class MultipleJSONParser {
         else if (paramObject instanceof Decimal) { result = String.valueOf((Decimal)paramObject); }
         else if (paramObject instanceof Double) { result = String.valueOf((Double)paramObject); }
         else {
-            System.debug('Unrecognized JSON object? Not string nor integer nor boolean?');
+            // Unrecognized JSON object type
             return result;
         }
-        System.debug('Base token: ' + result);
         return result;
     }
     
