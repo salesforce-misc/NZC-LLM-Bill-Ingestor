@@ -138,7 +138,7 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                     const firstItem = tableData[0];
                     // Only add columns for essential fields that exist in the data
                     essentialFields.forEach(field => {
-                        if (Object.prototype.hasOwnProperty.call(firstItem, field.key)) {
+                        if (field.key in firstItem && firstItem[field.key] !== undefined) {
                             const column = {
                                 label: field.label,
                                 fieldName: field.key,
