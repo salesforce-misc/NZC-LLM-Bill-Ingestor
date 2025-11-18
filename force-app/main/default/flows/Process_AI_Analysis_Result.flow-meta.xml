@@ -5,7 +5,7 @@
         <label>find Energy Values</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <actionName>MultipleJSONParser</actionName>
+        <actionName>parseMultipleJson</actionName>
         <actionType>apex</actionType>
         <connector>
             <targetReference>Verify_Data</targetReference>
@@ -47,7 +47,7 @@
                 <elementReference>input_AIAnalysisResult</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>MultipleJSONParser</nameSegment>
+        <nameSegment>parseMultipleJson</nameSegment>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <apiVersion>64.0</apiVersion>
