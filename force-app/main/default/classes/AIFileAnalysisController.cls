@@ -222,11 +222,28 @@ public with sharing class AIFileAnalysisController {
         String dueDate;
         String account;
         
-        SiteData(String kilowatts, String chargeAmount, String dueDate, String account) {
+        SiteData() {
+            // Default constructor for builder pattern
+        }
+        
+        SiteData withKilowatts(String kilowatts) {
             this.kilowatts = kilowatts;
+            return this;
+        }
+        
+        SiteData withChargeAmount(String chargeAmount) {
             this.chargeAmount = chargeAmount;
+            return this;
+        }
+        
+        SiteData withDueDate(String dueDate) {
             this.dueDate = dueDate;
+            return this;
+        }
+        
+        SiteData withAccount(String account) {
             this.account = account;
+            return this;
         }
     }
     
@@ -234,12 +251,11 @@ public with sharing class AIFileAnalysisController {
      * Extracts site data from JSON map
      */
     private static SiteData extractSiteData(Map<String, Object> site) {
-        String kilowatts = getStringValue(site.get('kilowatts_consumed'));
-        String chargeAmount = getStringValue(site.get('charge_amount_electricity'));
-        String dueDate = getStringValue(site.get('due_date'));
-        String account = getStringValue(site.get('account'));
-        
-        return new SiteData(kilowatts, chargeAmount, dueDate, account);
+        return new SiteData()
+            .withKilowatts(getStringValue(site.get('kilowatts_consumed')))
+            .withChargeAmount(getStringValue(site.get('charge_amount_electricity')))
+            .withDueDate(getStringValue(site.get('due_date')))
+            .withAccount(getStringValue(site.get('account')));
     }
     
     /**
