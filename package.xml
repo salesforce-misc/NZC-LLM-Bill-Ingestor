@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>AIFileAnalysisController</members>
+        <members>MultipleJSONParser</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Process_AI_Analysis_Result</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>Analyze_Files</members>
+        <name>GenAiPromptTemplate</name>
+    </types>
+    <types>
+        <members>imageAnalyzer</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>62.0</version>
+</Package>

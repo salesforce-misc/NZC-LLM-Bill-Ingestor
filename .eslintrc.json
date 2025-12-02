@@ -1,0 +1,33 @@
+{
+    "extends": [
+        "@salesforce/eslint-config-lwc/recommended",
+        "@salesforce/eslint-plugin-aura/recommended",
+        "@salesforce/eslint-plugin-lightning/recommended"
+    ],
+    "overrides": [
+        {
+            "files": ["*.test.js"],
+            "extends": ["@salesforce/eslint-config-lwc/jest"]
+        }
+    ],
+    "rules": {
+        "@lwc/lwc/no-api-reassignments": "error",
+        "@lwc/lwc/no-deprecated-lifecycle-hooks": "error",
+        "@lwc/lwc/no-document-query": "warn",
+        "@lwc/lwc/no-inner-html": "error",
+        "@lwc/lwc/no-leading-uppercase-api-name": "error",
+        "@lwc/lwc/no-rest-parameter": "error",
+        "@lwc/lwc/prefer-custom-event": "error",
+        "@lwc/lwc/valid-api": "error",
+        "@lwc/lwc/valid-track": "error",
+        "@lwc/lwc/valid-wire": "error"
+    },
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    }
+}

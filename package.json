@@ -1,0 +1,64 @@
+{
+  "name": "nzc-llm-bill-ingestor",
+  "version": "1.0.0",
+  "description": "AI-powered solution for automated bill processing and energy consumption tracking in Salesforce Net Zero Cloud",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:unit",
+    "test:unit": "sfdx-lwc-jest",
+    "test:unit:watch": "sfdx-lwc-jest --watch",
+    "test:unit:debug": "sfdx-lwc-jest --debug",
+    "test:unit:coverage": "sfdx-lwc-jest --coverage",
+    "prettier": "prettier --write \"**/*.{css,html,js,json,md,ts,xml,yaml,yml}\"",
+    "prettier:verify": "prettier --list-different \"**/*.{css,html,js,json,md,ts,xml,yaml,yml}\"",
+    "lint": "eslint **/{aura,lwc}/**",
+    "postinstall": "husky install",
+    "precommit": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jvillalpando_sfemu/NZC-LLM-Bill-Ingestor.git"
+  },
+  "keywords": [
+    "salesforce",
+    "net-zero-cloud",
+    "ai",
+    "energy-tracking",
+    "lwc",
+    "einstein",
+    "sustainability"
+  ],
+  "author": "Salesforce Community",
+  "license": "MIT",
+  "devDependencies": {
+    "@lwc/eslint-plugin-lwc": "^1.7.2",
+    "@prettier/plugin-xml": "^3.2.0",
+    "@salesforce/eslint-config-lwc": "^3.5.2",
+    "@salesforce/eslint-plugin-aura": "^2.1.0",
+    "@salesforce/eslint-plugin-lightning": "^1.0.0",
+    "@salesforce/sfdx-lwc-jest": "^3.1.0",
+    "eslint": "^8.47.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-jest": "^27.2.3",
+    "husky": "^8.0.3",
+    "jest": "^29.6.2",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.1",
+    "prettier-plugin-apex": "^2.0.1"
+  },
+  "dependencies": {
+    "@salesforce-ux/design-system": "^2.22.2"
+  },
+  "lint-staged": {
+    "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
+      "prettier --write"
+    ],
+    "**/{aura,lwc}/**": [
+      "eslint"
+    ]
+  },
+  "volta": {
+    "node": "18.17.1",
+    "npm": "9.6.7"
+  }
+}

@@ -1,0 +1,206 @@
+---
+alwaysApply: true
+---
+
+Apex Enterprise Patterns (fflib) — Project Rules
+
+Scope
+- Applies to all Apex in this repo except third‑party/vendor code under `force-app/main/default/classes/fflib-apex-common/`.
+- New classes must follow these rules; existing code should be refactored toward compliance when touched.
+
+Architecture Requirements
+- Layering (no exceptions):
+  - Selector layer: One Selector class per SObject, encapsulating all SOQL for that object.
+  - Service (Application) layer: Orchestrates use cases, transactions, and UnitOfWork; contains no SOQL or triggers.
+  - Presentation controllers (LWC/Aura/REST): Thin façades that call Services and map to DTOs.
+- Unit of Work:
+  - All DML must go through `fflib_SObjectUnitOfWork` in Service layer
+  - Never perform ad‑hoc DML in Triggers or Controllers.
+- Dependency Injection:
+  - Resolve Selectors/Services via `fflib_Application` or a small `Application` provider; allow swapping with mocks in tests.
+
+Class Placement & Naming
+- File/folder placement should mirror logical layers (e.g., `classes/common`, `classes/skill-insight-app`, etc.); keep related Selector/Service near their feature area.
+- Naming conventions (examples):
+  - `<SObject>Selector` (e.g., `AccountSelector`)
+  - `<Feature>Service` (e.g., `BillingService`), optionally `<Feature>Application`
+  - `<SObject>Trigger` (single trigger per object)
+  - `<Feature>Controller` for LWC/Aura/REST façades
+- Sharing keywords:
+  - Selectors: `inherited sharing`
+  - Services: `with sharing`
+  - Controllers: `with sharing`
+  - Triggers use platform defaults; logic is in Service with sharing as above.
+
+Selectors — Rules
+- Encapsulate all SOQL for their SObject.
+- Provide small, intention‑revealing methods (e.g., `selectByIds`, `selectActiveByOwner`, `selectForUpdateByIds`).
+- Define `getSObjectType()` and `getSObjectFieldList()`; prefer whitelisted fields for predictable performance.
+- No DML, no business rules, no side‑effects.
+
+
+Services (Application) — Rules
+- Orchestrate use cases across multiple selectors; enforce transaction boundaries.
+- Construct a `UnitOfWork` instance and register inserts/updates/deletes, then `commitWork()`.
+- No SOQL directly; call Selectors. No Trigger logic.
+- Validate arguments and return DTOs or SObjects appropriate to the façade.
+
+Controllers (LWC/Aura/REST) — Rules
+- Thin: parameter parsing, call appropriate Service, map to DTOs.
+- No SOQL, no DML, no business rules.
+- Use `@AuraEnabled(cacheable=true)` for read methods when safe; write methods must not be cacheable.
+
+DTOs & Mappers
+- Use small DTO classes or `fflib_SObjects` utility for serialization boundaries.
+- Centralize mapping logic; avoid leaking SObject internals to UI when not required.
+
+Best Practices (Enforced/Expected)
+- Bulkification: No SOQL/DML in loops; aggregate sets/collections; size‑appropriate queries.
+- Limits: Respect governor limits; consider selective queries and field lists; avoid unbounded recursion.
+- Transactions: Fail fast with meaningful exceptions; group work in UoW; partial success only if explicitly designed.
+- Null safety: Validate inputs with `fflib_SObjects`/guard clauses; avoid NPE chains.
+- Constants/Config: Use central constants; prefer Custom Metadata/Settings for org‑specific configuration.
+- Security: Respect sharing (`with/inherited sharing` as above), FLS/CRUD where applicable for UI/REST.
+- Logging/Errors: Use consistent error types/messages; avoid exposing internal details to UI.
+- No hard‑coded Ids; no time‑dependent logic without abstractions.
+
+Testing Standards
+- Use `fflib_ApexMocks` for interaction tests; stub Selectors/Services via DI.
+- Unit tests for each layer: Selector (query shape), Service (orchestration), Controller (parameter mapping, happy/error paths).
+- Arrange‑Act‑Assert structure; no `SeeAllData=true`.
+- Use factories/builders for test data; leverage `Test.startTest()/stopTest()` for async/limits reset.
+- Test bulk scenarios (200 records) and mixed DML edge cases; assert no queries/DML in loops where practical via limits assertions.
+- Coverage: ≥ 85% per class preferred; 75% is a floor, not a goal. Critical paths must have branch coverage.
+
+Anti‑Patterns (Do Not Do)
+- Business logic in Triggers or Controllers.
+- SOQL/DML inside loops; unbounded recursion; static global mutable state for cross‑tx communication.
+- Direct instantiation of Selectors/Services inside code under test without DI seam.
+- Mixed responsibilities (e.g., Selector doing DML).
+- Multiple triggers per SObject;
+
+Reference Skeletons (use and adapt)
+
+Selector
+```apex
+public inherited sharing class AccountSelector extends fflib_SObjectSelector {
+    public override Schema.SObjectType getSObjectType() {
+        return Account.SObjectType;
+    }
+    public override List<Schema.SObjectField> getSObjectFieldList() {
+        return new List<Schema.SObjectField>{
+            Account.Id, Account.Name /* add required fields only */
+        };
+    }
+    public List<Account> selectByIds(Set<Id> accountIds) {
+        return (List<Account>) selectSObjectsById(accountIds);
+    }
+    public List<Account> selectActiveByOwner(Set<Id> ownerIds) {
+        return (List<Account>) Database.query(buildQueryWhereOwners(ownerIds) + ' AND IsActive__c = true');
+    }
+    private String buildQueryWhereOwners(Set<Id> ownerIds) {
+        return 'SELECT ' + getSelectedFields() + ' FROM Account WHERE OwnerId IN :ownerIds';
+    }
+}
+```
+
+Service
+```apex
+public with sharing class AccountService {
+    private final fflib_ISObjectUnitOfWork unitOfWork;
+    private final AccountSelector accountSelector;
+
+    public AccountService(fflib_ISObjectUnitOfWork unitOfWork, AccountSelector accountSelector) {
+        this.unitOfWork = unitOfWork;
+        this.accountSelector = accountSelector;
+    }
+
+    public static AccountService newInstance() {
+        return new AccountService(
+            Application.UnitOfWork.newInstance(),
+            (AccountSelector) Application.Selector.newInstance(Account.SObjectType)
+        );
+    }
+
+    public void upsertAccounts(List<Account> accounts) {
+        fflib_SObjects.validateNotNull(accounts, 'accounts');
+       
+        unitOfWork.registerUpsert(accounts);
+        unitOfWork.commitWork();
+    }
+
+    public List<Account> getActiveAccountsByOwner(Set<Id> ownerIds) {
+        return accountSelector.selectActiveByOwner(ownerIds);
+    }
+}
+```
+
+
+
+Controller (LWC/Aura façade)
+```apex
+public with sharing class AccountController {
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getActiveByOwner(Set<Id> ownerIds) {
+        return AccountService.newInstance().getActiveAccountsByOwner(ownerIds);
+    }
+
+    @AuraEnabled
+    public static void upsertAccounts(List<Account> accounts) {
+        AccountService.newInstance().upsertAccounts(accounts);
+    }
+}
+```
+
+Application Provider (optional)
+```apex
+public with sharing class Application {
+    public class UnitOfWork {
+        public static fflib_ISObjectUnitOfWork newInstance() {
+            return new fflib_SObjectUnitOfWork(new Schema.SObjectType[]{
+                Account.SObjectType, Contact.SObjectType /* register used types */
+            });
+        }
+    }
+    public class Selector {
+        public static fflib_Selector newInstance(Schema.SObjectType type) {
+            return fflib_Application.Selector.newInstance(type);
+        }
+    }
+}
+```
+
+Testing Templates (outline)
+```apex
+@IsTest
+private class AccountServiceTest {
+    @IsTest
+    static void upsertAccounts_commitsWork_and_validates() {
+        fflib_ApexMocks mocks = new fflib_ApexMocks();
+        fflib_ISObjectUnitOfWork uow = (fflib_ISObjectUnitOfWork) mocks.mock(fflib_ISObjectUnitOfWork.class);
+        AccountSelector selector = (AccountSelector) mocks.mock(AccountSelector.class);
+        AccountService svc = new AccountService(uow, selector);
+
+        List<Account> input = new List<Account>{ new Account(Name='Acme') };
+
+        Test.startTest();
+        svc.upsertAccounts(input);
+        Test.stopTest();
+
+        ((fflib_ApexMocks)mocks).verify(uow, 1).registerUpsert(input);
+        ((fflib_ApexMocks)mocks).verify(uow, 1).commitWork();
+    }
+}
+```
+
+Pull Request Checklist (must confirm)
+- Follows Selector/Service layering and trigger delegation.
+- No SOQL/DML in loops; bulkified; sharing keywords as required.
+- All DML via UnitOfWork (except explicit).
+- Controllers thin; DTOs/mappers used where needed; security reviewed (FLS/CRUD/sharing).
+- Tests: unit and interaction tests with ApexMocks; bulk scenarios; limits; ≥85% coverage on changed classes.
+- Naming/placement adheres to conventions; constants/config extracted; no hard‑coded Ids.
+
+Notes
+- Use the `fflib-apex-common` folder as the canonical reference for APIs and patterns.
+- Deviation from these rules requires explicit design review and documentation.

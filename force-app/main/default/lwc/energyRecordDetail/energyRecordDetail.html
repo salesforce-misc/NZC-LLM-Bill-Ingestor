@@ -1,0 +1,43 @@
+<template>
+    <template if:true={showComponent}>
+        <div class="detail-container">
+            <!-- Header with title and close button -->
+            <div class="detail-header">
+                <h4 class="detail-title">
+                    <lightning-icon icon-name="utility:preview" size="small"></lightning-icon>
+                    {recordTitle}
+                </h4>
+                <lightning-button-icon 
+                    icon-name="utility:close" 
+                    variant="bare" 
+                    onclick={handleClose}
+                    alternative-text="Close Details"
+                    title="Close Details"
+                    class="detail-close-btn">
+                </lightning-button-icon>
+            </div>
+            
+            <!-- Content area -->
+            <div class="detail-content">
+                <template if:true={recordData}>
+                        <div class="detail-grid">
+                            <template for:each={detailFields} for:item="field">
+                                <div key={field.key} class="detail-field" data-field-type={field.type}>
+                                    <div class="detail-label">{field.label}</div>
+                                    <div class="detail-value">{field.value}</div>
+                                </div>
+                            </template>
+                        </div>
+                </template>
+                
+                <!-- Empty state -->
+                <template if:false={recordData}>
+                    <div class="detail-empty">
+                        <lightning-icon icon-name="utility:info" size="medium"></lightning-icon>
+                        <p>No record data available</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+</template>
