@@ -13,7 +13,11 @@
     "prettier:verify": "prettier --list-different \"**/*.{css,html,js,json,md,ts,xml,yaml,yml}\"",
     "lint": "eslint **/{aura,lwc}/**",
     "postinstall": "husky install",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "deps:report": "./scripts/generate-dependency-report.sh",
+    "deps:list": "npm list --depth=0",
+    "deps:outdated": "npm outdated",
+    "deps:audit": "npm audit"
   },
   "repository": {
     "type": "git",
