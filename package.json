@@ -40,7 +40,7 @@
     "@salesforce/eslint-config-lwc": "^3.5.2",
     "@salesforce/eslint-plugin-aura": "^3.0.0",
     "@salesforce/eslint-plugin-lightning": "^1.0.0",
-    "@salesforce/sfdx-lwc-jest": "^3.1.0",
+    "@salesforce/sfdx-lwc-jest": "^7.1.2",
     "eslint": "^8.47.0",
     "eslint-plugin-import": "^2.28.0",
     "eslint-plugin-jest": "^29.2.1",
