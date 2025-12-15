@@ -65,11 +65,15 @@ Click the **"Deploy to Salesforce"** button above for instant deployment to your
 
 For environments where GitHub access is restricted:
 
-1. **Download** the pre-built deployment package: [NZC-LLM-Bill-Ingestor-Deploy.zip](./NZC-LLM-Bill-Ingestor-Deploy.zip)
+1. **Download** the pre-built deployment package:
+   - Direct download: [NZC-LLM-Bill-Ingestor-Deploy.zip](./NZC-LLM-Bill-Ingestor-Deploy.zip)
+   - Or download from the [GitHub Releases](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor/releases) tab
 2. **Navigate** to [Salesforce Workbench](https://workbench.developerforce.com/login.php)
 3. **Login** to your target org
 4. **Go to** Migration → Deploy
 5. **Upload** the zip file and deploy
+
+**Alternative Tools:** You can also deploy using [Salesforce Inspector](https://chrome.google.com/webstore/detail/salesforce-inspector/aodjmnfhjibkcdimpodiifdjnnncaafh) or the [Ant Migration Tool](https://developer.salesforce.com/docs/atlas.en-us.daas.meta/daas/forcemigrationtool_install.htm).
 
 #### 🛠️ Option 3: Salesforce CLI Deployment
 
@@ -95,20 +99,40 @@ sfdx auth:web:login --setalias MyOrg
 ##### 3.3 Deploy the Metadata
 
 ```bash
-# Deploy all components
+# Deploy all components (Salesforce CLI v2)
+sf project deploy start --source-dir force-app --target-org MyOrg
+
+# Or using legacy sfdx command
 sfdx force:source:deploy -p force-app -u MyOrg
 
 # Or use CumulusCI (if configured)
 cci flow run dev_org --org dev
 ```
 
+**Note:** This accelerator is compatible with CI/CD tools like Gearset, Copado, and Flosum.
+
 #### ⚡ Post-Deployment Configuration
 
-After deploying with any method above, ensure your org has:
-- ✅ **Einstein AI Platform** enabled
-- ✅ **Prompt Template Builder** access  
-- ✅ **Required Einstein credits** available
-- ✅ **Net Zero Cloud** licensed and configured
+After deploying with any method above, complete these manual steps:
+
+1. **Enable Einstein AI Platform**
+   - Navigate to Setup → Einstein Platform
+   - Enable Einstein AI features if not already enabled
+
+2. **Access Prompt Template Builder**
+   - Ensure you have access to Prompt Template Builder
+   - Verify the `Analyze_Files` prompt template is active
+
+3. **Verify Einstein Credits**
+   - Check that you have sufficient Einstein credits available
+   - Credits are consumed per AI analysis request
+
+4. **Configure Net Zero Cloud**
+   - Ensure Net Zero Cloud is licensed and configured
+   - Verify `StnryAssetEnrgyUse` object is available
+
+5. **Add Component to Lightning Pages**
+   - Follow the [Usage instructions](#-usage) below to add the component to your pages
 
 ---
 
@@ -139,7 +163,15 @@ After deploying with any method above, ensure your org has:
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Technical Architecture
+
+This accelerator contains the following metadata:
+- **2 Lightning Web Components** (`imageAnalyzer`, `energyRecordDetail`)
+- **2 Apex Classes** (`AIFileAnalysisController`, `MultipleJSONParser`)
+- **1 Flow** (`Process_AI_Analysis_Result`)
+- **1 Einstein AI Prompt Template** (`Analyze_Files`)
+
+### Architecture Diagram
 
 ```mermaid
 graph TB
@@ -189,12 +221,26 @@ This project is licensed under the **MIT License** - see the [LICENSE.md](LICENS
 
 ---
 
+## 🐛 How to Report Bugs
+
+Found a bug or have a feature request? Please report it via [GitHub Issues](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor/issues).
+
+When reporting bugs, please include:
+- Steps to reproduce the issue
+- Expected vs. actual behavior
+- Salesforce org version and edition
+- Screenshots or error messages (if applicable)
+
 ## 🆘 Support
 
-- 📚 **Documentation**: Check our [Wiki](../../wiki) for detailed guides
-- 🐛 **Issues**: Report bugs via [GitHub Issues](../../issues)
-- 💬 **Discussions**: Join the conversation in [GitHub Discussions](../../discussions)
+- 📚 **Documentation**: Check our [Wiki](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor/wiki) for detailed guides
+- 🐛 **Issues**: Report bugs via [GitHub Issues](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor/issues)
+- 💬 **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor/discussions)
 - 📧 **Contact**: Reach out to the maintainers for enterprise support
+
+## ⚠️ Disclaimer
+
+**This accelerator is open-source, not an official Salesforce product, and is community-supported.** Salesforce does not provide official support for this accelerator. Use at your own risk and test thoroughly in a sandbox environment before deploying to production.
 
 ---
 
