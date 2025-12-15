@@ -1,0 +1,55 @@
+---
+description: LWC rules for writing Jest Unit Tests
+globs: /**/__tests__/*.test.[jt]s
+author: ben.fox@salesforce.com
+tags: lwc, components, best-practices, jest
+---
+
+# Rules for writing Lightning Web Component (LWC) Tests with Jest
+
+The instructions in this rule should always be followed when writing unit tests for LWCs.
+
+## Remember these specific conventions for LWC:
+- LWC Component tests are written in a __tests__ folder
+- The test file will be in a format like myComponent.test.ts
+- The component itself will be in a folder one level up from the __tests__ folder
+- The component script file will be named myComponent.ts (for TypeScript) or myComponent.js (for JavaScript)
+- The component html markup file will be named myComponent.html
+
+## Before starting to write unit tests:
+- Do read both the component `.js` (or `.ts`) file and the `.html` file before starting to write tests.
+- Do read the `.html` file to understand what events the component listens for
+  - The event listener on an element is always preceeded with "on", like "onmyevent"
+- Do examine the `.js`/`.ts` file to understand what those event handlers do.
+
+## Follow these best practices for unit tests, which:
+- Should test observable behavior
+  - like how the a value passed via props is rendered in the component html
+- Should test observable functionality
+  - like how events are dispatched and what effects events have on the observable behavior of the component
+- Should not make assertions about specific component or element properties
+  - like the `class` prop, or other specific strings or properties set on elements.
+- Should not test functionality that is a part of specific packages or the web/browser framework generally
+  - like that the `dispatchEvent` is present on an LWC component as this behavior
+
+## When writing the unit tests:
+- Do not attempt to access any component property or method that is not marked with the `@api` decorator.
+  - Do not assert a value on `myComponent.someNonApiProperty` in the test
+  - Do not not call an event handler directly like `myComponent.handleMyEvent()`.
+- Do not instantiated a LWC with with a constructor like `new MyComponent()`
+- Do use the `createElement` method from the `lwc` package (`import { createElement } from 'lwc';`) to create components.
+  - Do look for custom methods that abstract the `lwc` package `createElement` method, and use those instead if present.
+- Do manually dispatch events from a component to trigger component behavior during tests.
+  - Do look for custom methods that abstract the standard `new CustomEvent()` method, and use those instead if present.
+- Do make it obvious what component is being tested
+  - Do name the component variable the same as the component being tested, like `myComponent` if the component test file is `myComponent.test.ts`
+
+## When updating component properties in unit tests:
+- If the updated property (or a getter for that property) is used in the html, the component will rerender.
+- The component rerendering is an asynchronous operation.
+- Any code that relies on the result of a rerender must be wrapped in a `Promise` or `await`ed
+
+When updating a property which will cause the component to rerender:
+- Do make sure the test function is `async`
+- Do make sure to `await` the rerender before continuing with a generic promise, like `await Promise.resolve()`
+  - Do look for custom methods that abstract the `await Promise` behavior, and use those instead if present.

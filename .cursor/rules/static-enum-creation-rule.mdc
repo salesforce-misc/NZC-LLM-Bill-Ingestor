@@ -1,0 +1,104 @@
+---
+description: Rule to create new static enum field on a Base Platform Object(BPO).
+globs:
+alwaysApply: false
+author: sruthi.gaddam@salesforce.com
+tags: "Static enum field on Base Platform Object(BPO)"
+---
+
+[Role]
+You are a software engineer at Salesforce. You have to create a new static enum field on a Platform Entity.
+
+[Task]
+Execute the following steps:
+1. Run the xml generation task.
+2. Once xml generation is finished, run the following terminal command - bazel run //:db-schema-update
+
+[Static Enum Creation]
+1. Ask the user for the following information:
+   - Entity file path where the enum will be added (${entityFile})
+   - Reference enum file path for structure (${referenceEnumFile})
+   - New enum name (${enumName})
+   - Enum values (${enumValues})
+   - Label file path (${labelFile})
+   - Filter file path (${filterFile})
+
+2. In the ${entityFile}:
+   - Add a new flexField with the following structure:
+   ```xml
+   <flexField name="${enumName}"
+              columnType="STATICENUM"
+              comment="Description of the enum field"
+              enum="${enumName}Type"
+              dbValueRequired="false"
+              slot="[next available slot]"/>
+   ```
+   - Add an item tag for the field in the layout section:
+   ```xml
+   <item field="${enumName}"/>
+   ```
+
+3. Create new Java enum file:
+   - Create at path: ${entityPath}/java/src/industries/${module}/udd/${enumName}Type.java
+   - Refer to the java file of the static enum field in (${referenceEnumFile}) and generate all methods similar to that.
+   - Add enum values as specified
+   - Add necessary annotations and documentation
+
+4. Create test file:
+   - Create at path: ${module}/test/unit/java/src/staticenums/${enumName}TypeTest.java
+   - Add tests to test the methods in ${enumName}Type.java file created in above step.
+
+5. Update ${labelFile}:
+   - Add new section for enum values
+   - Add field label under entity section
+
+6. Update module.xml in the same directory as ${entityFile}:
+   - Add new staticEnum entry
+
+7. Update ${filterFile}:
+  - Add new field in the columns section using the following format:
+   ```xml
+   <column udd="t.${enumName}" alias="${enumName}"/>
+   ```
+   - Place it before the closing </columns> tag
+   - Follow the same pattern as other columns in the file
+
+8. Update industries-sfdcnames.xml:
+   - Add new field name entry in core/shared-standard-labels/java/resources/sfdc/i18n/shared_standard_labels/industries-sfdcnames.xml
+
+9. Update ChangeEvent file:
+   - Add the new field to ${entityName}ChangeEvent.entity.xml with maxSize="255"
+   - Add the field before the closing </concreteAssociateEntity> tag
+   - Use the following format:
+   ```xml
+   <field name="${enumName}" columnType="TEXT" maxLength="255"/>
+   ```   
+
+[Context]
+Static enums are used to define fixed sets of values for fields in platform entities. They require:
+1. Field definition in entity XML with proper columnType and enum attributes
+2. Java enum class with value mapping
+3. Test class with value and label tests
+4. Label entries for both enum values and field
+5. Module configuration
+6. Filter configuration
+7. SFDC name registration
+
+[Constraints]
+- Follow existing naming conventions
+- Maintain consistent formatting
+- Ensure all required files are updated
+- Add proper documentation
+- Include test coverage
+- Use next available slot number
+- Set dbValueRequired="false" unless specifically required
+
+[Output]
+Summarize the changes made:
+1. Added static enum field to entity with proper XML structure
+2. Created Java enum class with value mapping
+3. Created test class with value and label tests
+4. Updated label files with enum values and field label
+5. Updated module configuration
+6. Updated filter configuration
+7. Added SFDC name entry

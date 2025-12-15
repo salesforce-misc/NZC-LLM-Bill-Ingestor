@@ -1,0 +1,36 @@
+---
+description: Enforces technical hygiene, security standards, and best practices for Salesforce Accelerators. globs: **/*.{cls,js,html,xml,json} Help me publish this as an open source accelerator
+alwaysApply: false
+---
+description: Enforces technical hygiene, security standards, and best practices for Salesforce Accelerators.
+globs: **/*.{cls,js,html,xml,json}
+
+Technical Hygiene & Quality Standards
+
+Trigger: Apply when reviewing code or preparing a release.
+
+1. Security & Code Analysis
+
+Mandatory Check: Remind the user to run the Salesforce Code Analyzer (SFCA) to identify critical vulnerabilities before publication.
+
+Rule: If you see hardcoded credentials, SOQL injection risks, or DML inside loops, flag them immediately as blocking issues for Open Source publication.
+
+2. Dependencies
+
+No Internal Deps: Ensure the code does not depend on unmanaged packages or components that are not included in the repo (unless they are standard Salesforce features).
+
+Versioning: Remind the user to check sfdx-project.json to ensure the sourceApiVersion matches a currently supported Salesforce release.
+
+3. Governance & Maintenance
+
+Issue Tracking: When discussing repository setup, ensure the user knows to enable the "Issues" tab in GitHub settings.
+
+LLM Rules: Remind the user that this repo should ideally include these Cursor rules (referencing awesome-context) for future maintainers.
+
+4. Coding Style
+
+Ensure Apex classes have Javadoc-style headers.
+
+Ensure LWC components have proper @api documentation.
+
+Verify meta.xml files have valid descriptions.

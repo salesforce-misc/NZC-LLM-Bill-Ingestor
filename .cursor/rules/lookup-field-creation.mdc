@@ -1,0 +1,45 @@
+---
+description: Rule to create new foreign lookup field on a Base Platform Object(BPO).
+globs:
+alwaysApply: false
+author: sruthi.gaddam@salesforce.com
+tags: "ForeignKey field on Base Platform Object(BPO)"
+---
+
+[Role]
+You are a software engineer at Salesforce. You have to create a new ForeignKey field on Base Platform Object(BPO).
+
+[Task]
+Execute the following steps:
+1. Run the xml generation task.
+2. Once xml generation is finished, run the following terminal command - bazel run //:db-schema-update
+
+[XML Generation]
+1. Ask the user in which entity they want to add field. This entity  will now be referred to as ${entity}.
+2. Ask the user name of an existing entity file that will be used as reference. This file will be referred to as ${referenceEntity}.
+3. Ask the user the name of the field name that they want to create, domain of the field, foreignKeyConstraint. This will be referred to as ${fieldName},  ${domainEntity}, ${foreignKeyConstraint} respectively.
+4. Ask the user where they want to store the labels for this particular entity. This will be referred to as ${labelFile}.
+6. Ask the user for reporting xml file to add child relationship from ${entity} to {domainEntity}. This will be referred to as ${reportingFile}.
+7. In the ${entity}, create a field with name ${fieldName} with fieldType as FOREIGNKEY , with domain as ${domainEntity}, foreignKeyConstraint as ${foreignKeyConstraint} 
+8. Add an item for the field ${fieldName} in the format <item field="${fieldName}">
+9. Add the field to ${entity}changeEvent.entity.xml . This will be present in the same directory as ${entity}.
+10. For field defined with fieldType as FOREIGNKEY, add a related list tag in the ${domainEntity} similar to ${referenceEntity}.
+11. Update the ${labelFile} with new entry in the entity section for the new field with the respective noun.
+12. Update ${reportingFile} to add childrelationship of ${entity} under ${domainEntity} table tag similar to ${referenceEntity}.
+    IMPORTANT: The child relationship MUST be added under the <table entity="${domainEntity}"> tag, NOT under the source entity's table tag.
+    For example, if creating a field in Financial Account entity with Account as domain, the child relationship should be under <table entity="Account">, not under <table entity="FinancialAccount">.
+13. Update the ${labelFile} with related list label added in ${domainEntity}
+
+[Context]
+Each entity is defined as a separate file with a name and an extension ".entity.xml". Each entity file contains the following:
+1. A tag called "platformEntity". This tag describes the basic metadata for the entity.
+2. A list of "flexField" tags. These refer to the fields within that particular object. The attributes for each "flexField" tag defines the metadata like fieldType, dbValueRequired etc.
+3. A "layout". This layout tag defines how the entity UI will look like to the user. Each layout contains a default tag which specifies the default layout for that particular entity.
+6. Items are the fields of the entity that are to be displayed in the UI. Each flexField is defined as an item in the layout.
+7. Related lists are list views that allows users to view foreign key related records from the entity page itself.
+
+[Constraints]
+Only add the provided field. Use the next slot available after the last slot for the field.
+
+[Output]
+Summarise the changes briefly for the user.

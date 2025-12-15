@@ -1,0 +1,47 @@
+---
+description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. globs: *. Help me publish this as an open source accelerator
+alwaysApply: false
+---
+description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. globs: *
+
+OSPO Compliance & Legal Scrubbing Rules
+
+Trigger: Apply these rules when the user asks to "prepare repo for open source", "check compliance", or "publish accelerator".
+
+1. Internal Reference Scrubbing (Mandatory)
+
+Before approving any code for publication, scan and flag/remove the following:
+
+Internal Domains: References to *.sfdc.sh, *.salesforce.com (internal wiki links), or internal Git hosts (git.soma.salesforce.com).
+
+Internal Tools: References to internal CI/CD systems (e.g., "GUS", "Grand Slam", internal Jenkins).
+
+Internal Comments: Comments mentioning "TO DO (Internal)", employee names, or internal team codes.
+
+Non-Public Dependencies: Ensure sfdx-project.json or package.json does not rely on private npm packages or internal Salesforce artifacts.
+
+2. Mandatory Files Checklist
+
+Ensure the following files exist in the root directory. If missing, generate them:
+
+LICENSE: Must contain the full text of the Apache License, version 2.0 (ALv2).
+
+CONTRIBUTING.md: A standard file explaining how to contribute, report bugs, and rules of engagement.
+
+3. Copyright Headers
+
+All source code files (Apex, LWC/JS, CSS, CMP) must include the standard Salesforce copyright header.
+
+Action: If missing, propose adding:
+
+/*
+ * Copyright (c) [YEAR], Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * For full license text, see the LICENSE file in the repo root or [https://opensource.org/licenses/Apache-2.0](https://opensource.org/licenses/Apache-2.0)
+ */
+
+
+4. Final Verification
+
+Remind the user: "Have you obtained VP Approval, Legal Approval, and OSPO Approval via the OSS Request Portal (https://oss-request2.sfdc.sh/)?"

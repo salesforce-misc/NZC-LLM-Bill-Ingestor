@@ -1,0 +1,87 @@
+---
+description: LWC coding standards and best practices for modern Salesforce development.
+globs: **/*.js,**/*.html,**/*.css
+author: emy.paulson@salesforce.com
+tags: lwc, components, best-practices
+---
+
+# LWC Best Practices
+
+## Naming Conventions
+- Use PascalCase for component class names and folder names (e.g., `AccountDetails`, `AccountDetails.js`)
+- Use camelCase for variables, methods, and tracked properties
+- Name custom events clearly with actions (e.g., `recordSaved`, `userSelected`)
+- Add suffixes like `Modal`, `Form`, or `List` to describe the component’s role
+
+## Project Structure
+- Follow this folder layout: `modules/namespace/componentName/`
+  - `componentName.js-meta.xml`
+  - `componentName.js`
+  - `componentName.html`
+  - `componentName.css`
+  - `__tests__/componentName.test.js`
+
+## Code Organization
+- Use Lightning base components whenever possible instead of building custom ones.
+- Add smart comments only when needed:
+  - Don’t comment on what the code does—write self-explanatory code instead
+  - Use comments to explain *why* something is done a certain way
+  - Document complex logic, APIs, and edge cases that aren’t obvious
+- Break large methods into smaller, focused functions
+- Use helper modules for reusable logic
+- Organize `.js`, `.html`, and `.css` in the same folder per component
+- Comment major sections and lifecycle hooks for clarity
+- Prefer multiple small components over one large one
+
+## Functions & Reactivity
+- Use `async/await` for better readability and handling
+- Check for `null` or `undefined` in logic to avoid crashes
+- Use `@api` only for properties/methods that should be accessed from outside
+- Use `@wire` for reactive data and handle errors safely
+- Reassign entire objects to trigger reactivity (e.g., `this.obj = { ...this.obj }`)
+
+## Lightning UI Record API
+- Prefer the `lightning/uiRecordApi` module (`getRecord`, `getRecords`, `createRecord`, `updateRecord`, `deleteRecord`) for CRUD so you automatically get field-level security, sharing, and caching benefits.
+- Always import field schemas (e.g., `import NAME_FIELD from '@salesforce/schema/Account.Name';`) and pass only the exact fields you need to `getRecord`/`getRecords` to reduce payload size and avoid stale data.
+- When using `getRecord`, derive values via `getFieldValue(record, FIELD)` or `getFieldDisplayValue` instead of traversing `record.fields` manually; these helpers normalize null checks and localization.
+- For create/update flows, build a `recordInput` with `fields: { FieldApiName: value }`, then call `createRecord(recordInput)` or `updateRecord(recordInput)` and wrap in `try/catch` to surface errors with `ShowToastEvent`.
+- Use `notifyRecordUpdateAvailable([{recordId}])` or `refreshApex` after imperative mutations so wired adapters stay in sync.
+- Handle wire adapter `error` objects explicitly (check `error.body.message` or `error.body.output.errors`) and surface user-friendly toasts while logging details for debugging.
+- When deleting records, guard user actions with confirmation UI and call `deleteRecord(recordId)` inside `try/catch` with optimistic UI updates rolled back if the promise rejects.
+
+## Styling & SLDS
+- Use SLDS utility classes for layout and spacing
+- Avoid inline styles; use the component’s CSS file
+- Use SLDS design tokens for spacing and colors (avoid hardcoded values)
+- Add accessibility-related classes and ARIA attributes when needed
+- When adding custom styles, do not use SLDS utility classes. Instead, define and use your own CSS classes as needed.
+
+## Error Handling
+- Handle wire service errors using the `error` parameter
+- Use `try/catch` in async logic, and check error types with `instanceof`
+- Show error messages using `ShowToastEvent`
+- Always handle promise rejections and edge cases in logic
+
+## Security
+- Don’t use `innerHTML`, `eval()`, or direct DOM access (e.g., `document`, `window`)
+- Never store sensitive data in `localStorage` or `sessionStorage`
+- Validate all `@api` inputs and message payloads
+
+## Communication Between Components
+- Use Lightning Message Service (LMS) for communication between unrelated components
+- Validate message content before sending or processing
+
+## Accessibility
+- Use `aria-label`, `aria-labelledby`, and `aria-describedby` for assistive tech support
+- Add `tabindex` where keyboard navigation is needed
+- Include descriptive `title` or `label` for screen readers
+- Use semantic HTML (e.g., `<ul>`, `<button>`, `<fieldset>`) to improve clarity
+
+## Testing
+- Aim for over 85% code coverage in tests
+- Write Jest tests for public methods and different UI states
+- Mock wire calls in tests
+- Follow a clear structure: Arrange → Act → Assert
+- Test for errors, loading states, and edge cases
+- Check rendered DOM elements and triggered events
+- Do not assert on component properties (internal or public) in tests. Always verify component behavior by checking the rendered DOM elements, their attributes, text content, and emitted events.

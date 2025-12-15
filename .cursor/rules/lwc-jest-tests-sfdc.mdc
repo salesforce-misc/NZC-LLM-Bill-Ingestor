@@ -1,0 +1,22 @@
+---
+description: Salesforce core-specific unstructions for LWC Jest tests
+globs: /**/__tests__/*.test.[jt]s
+author: ben.fox@salesforce.com
+tags: lwc, jest
+---
+
+# Instructions for LWC Jest Tests specifically within the Salesforce core application
+
+You are within the salesforce core application if you are in the root `core/` directory, or a child directory of `core/`
+
+## Running LWC Jest Tests
+
+There is a unique command to run a specific test or suite of tests.
+
+The command takes three variable parameters, which are:
+- the full path to the test file, or ##testfilepath##
+- the full path the closest parent jest config file, or ##configpath##
+- the name of the test or test suite in the test file, or ##testname##
+
+Then, from the root `core/` folder, the command is:
+./tools/build/bazel/validations/jest/native-jest.sh '##testfilepath##' -c '##configpath##' -t '##testname##' --execModeRun

@@ -1,0 +1,40 @@
+---
+alwaysApply: true
+---
+
+# Project Structure Reference
+
+## Overview
+This project contains a comprehensive summary document that provides an LLM-optimized overview of the entire codebase structure, architecture, and components.
+
+## Primary Reference Document
+**File**: `REPOSITORY_SUMMARY.md` (located in the project root)
+
+## When to Use
+**ALWAYS** read `REPOSITORY_SUMMARY.md` first when you need to:
+- Understand the overall project structure
+- Learn about the technology stack and architecture
+- Identify which components exist and their purposes
+- Find relationships between different parts of the codebase
+- Get context before making changes or answering questions about the project
+- Understand the data model and key objects
+- Learn about the deployment and development workflow
+
+## Why This File
+The `REPOSITORY_SUMMARY.md` file contains:
+- Complete project overview and technology stack
+- Detailed component architecture (LWC, Apex, Flows)
+- Data model and object relationships
+- Key features and functionalities
+- Directory structure and organization
+- Development guidelines and best practices
+- Integration points and external dependencies
+
+This file is specifically formatted to be easily consumable by LLMs, providing quick context without requiring extensive codebase exploration.
+
+## Workflow
+1. **First**: Read `REPOSITORY_SUMMARY.md` to understand the project
+2. **Then**: Use specific tools (codebase_search, grep, read_file) to dive into relevant components
+3. **Finally**: Make informed decisions based on comprehensive context
+
+By following this approach, you'll have better context for all tasks and provide more accurate, architecture-aware responses.

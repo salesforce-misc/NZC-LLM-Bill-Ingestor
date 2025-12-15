@@ -1,0 +1,61 @@
+---
+description: Generates and validates README.md files for Salesforce Accelerators according to OSPO standards. globs: README.md Help me publish this as an open source accelerator
+alwaysApply: false
+---
+description: Generates and validates README.md files for Salesforce Accelerators according to OSPO standards. globs: README.md
+
+Accelerator README Standards
+
+Trigger: Apply these rules when generating, editing, or reviewing the README.md.
+
+1. Required Structure
+
+The README must strictly follow this outline:
+
+Project Title & Purpose: Clear statement of the business problem solved.
+
+Features: High-level list of capabilities.
+
+Technical Architecture: Overview of metadata (e.g., "Contains 2 LWCs, 1 Apex Class, 1 Flow").
+
+Installation Instructions: (See Section 2 below).
+
+Post-Installation Steps: Manual steps (e.g., Assign Permission Sets, Activate Flows).
+
+How to Report Bugs: Link to GitHub Issues tab.
+
+Disclaimer: "This accelerator is open-source, not an official Salesforce product, and is community-supported."
+
+2. Mandatory Installation Paths
+
+You MUST provide these three specific installation methods in the README:
+
+Path 1: One-Click Deploy (Admin-Friendly)
+
+You must include the "Deploy to Salesforce" button using this exact Markdown pattern (replace users/repo placeholders):
+
+[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://github.com/afawcett/githubsfdeploy?owner=YOUR_GITHUB_USERNAME&repo=YOUR_REPO_NAME)
+
+
+Path 2: Metadata .zip File (Admin-Friendly)
+
+Instruct the user to download the .zip from the GitHub "Releases" tab.
+
+Provide instructions to deploy using Workbench, Salesforce Inspector, or Ant Migration Tool.
+
+Path 3: Pro-Code / CI/CD (Developer-Friendly)
+
+Provide CLI commands:
+
+sf project deploy start --target-org <org-alias>
+# OR
+sfdx force:source:deploy ...
+
+
+Mention compatibility with CI/CD tools like Gearset or Copado.
+
+3. Tone and Style
+
+The README is the "Storefront". It must be accessible to Admins (non-coders) and Developers alike.
+
+Do not assume the user knows how to use a CLI for Path 1 or 2.

@@ -1,0 +1,104 @@
+---
+description: Rule to create new text field on a Base Platform Object(BPO).
+globs:
+alwaysApply: false
+author: sruthi.gaddam@salesforce.com
+tags: "Text field on Base Platform Object(BPO)"
+---
+
+[Role]
+You are a software engineer at Salesforce. You have to create a new text field on Platform Entity.
+
+[Task]
+Execute the following steps:
+1. Add the field to the entity XML file.
+2. Update layout configuration.
+3. Add labels for the field.
+4. Update filter configuration.
+5. Update shared standard labels.
+6. Update change event entity.
+7. Run the database schema update command.
+
+[Text Field Creation]
+1. Ask the user for the following information:
+   - Entity file path where the field will be added (${entityFile})
+   - New field name (${fieldName})
+   - Field type (${fieldType})
+   - Maximum length (${maxLength})
+   - Field description (${description})
+   - Slot number (${slot})
+   - Label file path (${labelFile})
+   - Filter file path (${filterFile})
+   - Change event file path (${changeEventFile})
+
+2. In the ${entityFile}:
+   - Add a new flexField with the following structure:
+   ```xml
+   <flexField name="${fieldName}"
+              columnType="${fieldType}"
+              slot="${slot}"
+              maxLength="${maxLength}"
+              comment="${description}"
+              usesFieldSecurity="true"/>
+   ```
+   - Add an item tag for the field in the layout section:
+   ```xml
+   <item field="${fieldName}"/>
+   ```
+
+3. Update ${labelFile}:
+   - Add new label entry for the field:
+   ```xml
+   <label name="${fieldName}">${fieldName}</label>
+   ```
+
+4. Update ${filterFile}:
+   - Add new field in the columns section using the following format:
+   ```xml
+   <column udd="t.${fieldName}" alias="${fieldName}"/>
+   ```
+   - Place it before the `<!-- custom columns -->` comment
+   - Follow the same pattern as other columns in the file
+
+5. Update ChangeEvent file:
+   - Add the new field to ${changeEventFile} with the following format:
+   ```xml
+   <flexField name="${fieldName}"
+              columnType="${fieldType}"
+              slot="${slot}"
+              maxLength="${maxLength}"
+              comment="${description}"/>
+   ```
+
+6. Run database schema update:
+   - Execute the following terminal command:
+   ```bash
+   bazel run //:db-schema-update
+   ```
+
+[Context]
+Text fields are used to store string data in platform entities. They require:
+1. Field definition in entity XML with proper columnType and maxLength attributes
+2. Layout configuration for UI display
+3. Label entries for field display
+4. Filter configuration for list views
+5. Change event configuration for tracking changes
+
+[Constraints]
+- Follow existing naming conventions
+- Maintain consistent formatting
+- Ensure all required files are updated
+- Add proper documentation
+- Use next available slot number if not provided
+- Set usesFieldSecurity="true" for security
+- Use appropriate maxLength values
+- Add proper comments
+
+[Output]
+Summarize the changes made:
+1. Added text field to entity with proper XML structure
+2. Updated layout configuration with field item
+3. Added label entries for field display
+4. Updated filter configuration for list views
+5. Updated change event configuration
+6. Executed database schema update
