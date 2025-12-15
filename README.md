@@ -10,9 +10,11 @@
 
 <div align="center">
 
-[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/?owner=salesforce-misc&repo=NZC-LLM-Bill-Ingestor&branch=main)
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/app/githubdeploy/salesforce-misc/NZC-LLM-Bill-Ingestor)
 
 **One-click deployment to your Salesforce org**
+
+> **Note:** If you encounter authentication issues, you may need to authorize the GitHub Salesforce Deploy Tool to access the `salesforce-misc` organization. Alternatively, use the [Salesforce CLI deployment method](#-option-3-salesforce-cli-deployment) below.
 
 </div>
 
