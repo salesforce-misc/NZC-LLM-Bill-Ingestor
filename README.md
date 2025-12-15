@@ -10,7 +10,7 @@
 
 <div align="center">
 
-[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/app/githubdeploy/salesforce-misc/NZC-LLM-Bill-Ingestor)
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com?owner=salesforce-misc&repo=NZC-LLM-Bill-Ingestor&ref=main)
 
 **One-click deployment to your Salesforce org**
 
