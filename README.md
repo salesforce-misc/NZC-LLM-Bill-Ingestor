@@ -10,7 +10,7 @@
 
 <div align="center">
 
-[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/?owner=jvillalpando_sfemu&repo=NZC-LLM-Bill-Ingestor&branch=master)
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/?owner=salesforce-misc&repo=NZC-LLM-Bill-Ingestor&branch=main)
 
 **One-click deployment to your Salesforce org**
 
@@ -76,7 +76,7 @@ For developers who prefer command-line tools:
 ##### 3.1 Clone the Repository
 
 ```bash
-git clone https://github.com/jvillalpando_sfemu/NZC-LLM-Bill-Ingestor.git
+git clone https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor.git
 cd NZC-LLM-Bill-Ingestor
 ```
 
