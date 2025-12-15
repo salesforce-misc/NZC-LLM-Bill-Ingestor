@@ -28,6 +28,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
     @track selectedRowData = null;
     @track showDetailView = false;
     @track _formattedResult = null;
+    @track sortedBy;
+    @track sortedDirection = 'asc';
     _lastAiResult = '';
 
     _wiredFilesResult;
@@ -102,7 +104,14 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
 
                 // Generate essential columns only - Account Number, Due Date, Kilowatts Consumed
                 let columns = [
-                    { label: '#', fieldName: 'rowIndex', type: 'number', fixedWidth: 60 }
+                    { 
+                        label: '#', 
+                        fieldName: 'rowIndex', 
+                        type: 'number', 
+                        fixedWidth: 60,
+                        sortable: true,
+                        initialWidth: 60
+                    }
                 ];
 
                 // Define essential fields we want to display
@@ -111,12 +120,14 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                         key: 'account_number', 
                         label: 'Account Number',
                         type: 'text',
-                        wrapText: true
+                        wrapText: true,
+                        sortable: true
                     },
                     { 
                         key: 'due_date', 
                         label: 'Due Date',
                         type: 'date',
+                        sortable: true,
                         typeAttributes: { 
                             year: 'numeric', 
                             month: 'short', 
@@ -127,6 +138,7 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                         key: 'kilowatts_consumed', 
                         label: 'kWh Consumed',
                         type: 'number',
+                        sortable: true,
                         typeAttributes: {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
@@ -142,7 +154,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                             const column = {
                                 label: field.label,
                                 fieldName: field.key,
-                                type: field.type
+                                type: field.type,
+                                sortable: field.sortable !== false // Default to sortable unless explicitly false
                             };
                             
                             // Add wrapText if specified
@@ -184,6 +197,13 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
                     data: tableData,
                     columns: columns
                 };
+                
+                // Initialize sorting by rowIndex on first load
+                if (!this.sortedBy) {
+                    this.sortedBy = 'rowIndex';
+                    this.sortedDirection = 'asc';
+                }
+                
                 console.log('✅ Debug - Returning cached array result:', this._formattedResult);
                 this._lastAiResult = this.aiResult;
                 return this._formattedResult;
@@ -284,6 +304,8 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         this.showDetailView = false;
         this._formattedResult = null;
         this._lastAiResult = '';
+        this.sortedBy = undefined;
+        this.sortedDirection = 'asc';
     }
 
     fileUploadHandler(event) {
@@ -386,6 +408,38 @@ export default class AIFileAnalysisController extends NavigationMixin(LightningE
         const encodedResult = encodeURIComponent(this.aiResult);
         let flowUrl = `/flow/${this.flowApiName}?input_AIAnalysisResult=${encodedResult}&recordId=${this.recordId}`;
         window.open(flowUrl, '_blank');
+    }
+
+    handleSort(event) {
+        const { fieldName: sortedBy, sortDirection } = event.detail;
+        const cloneData = [...this.resultData];
+
+        // Sort the data based on the field and direction
+        cloneData.sort((a, b) => {
+            let aVal = a[sortedBy];
+            let bVal = b[sortedBy];
+
+            // Handle null/undefined values
+            if (aVal === null || aVal === undefined) aVal = '';
+            if (bVal === null || bVal === undefined) bVal = '';
+
+            // Convert to string for comparison if needed
+            if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+            if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+            // Compare values
+            let result = 0;
+            if (aVal > bVal) result = 1;
+            if (aVal < bVal) result = -1;
+
+            // Return based on sort direction
+            return sortDirection === 'asc' ? result : -result;
+        });
+
+        // Update the sorted data and sorting state
+        this._formattedResult.data = cloneData;
+        this.sortedBy = sortedBy;
+        this.sortedDirection = sortDirection;
     }
 
     handleRowAction(event) {

@@ -260,25 +260,19 @@
 
 .ai-result-datatable {
     width: 100%;
-    margin-top: 1rem;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: var(--slds-var-spacing-medium, 1rem);
 }
 
 .ai-result-datatable lightning-datatable {
     width: 100%;
+    border: var(--slds-c-datatable-color-border, 1px solid #e5e5e5);
+    border-radius: var(--slds-var-border-radius-medium, 0.25rem);
 }
 
-/* Custom styling for the datatable */
-.ai-datatable {
-    border-radius: 0.5rem;
-}
-
-/* Ensure proper spacing and readability */
+/* SLDS-compliant spacing using design tokens */
 .ai-result-datatable lightning-datatable {
-    --slds-c-datatable-cell-spacing-block: 0.75rem;
-    --slds-c-datatable-cell-spacing-inline: 1rem;
+    --slds-c-datatable-cell-spacing-block: var(--slds-var-spacing-small, 0.75rem);
+    --slds-c-datatable-cell-spacing-inline: var(--slds-var-spacing-medium, 1rem);
 }
 
 /* Ensure tables use full width */
@@ -293,55 +287,50 @@
     max-width: 200px;
 }
 
-/* Table hint styling */
+/* Table hint styling using SLDS tokens */
 .ai-table-hint {
-    font-size: 0.85rem;
-    color: #5f6368;
+    font-size: var(--slds-var-font-size-2, 0.875rem);
+    color: var(--slds-c-text-color-weak, #706e6b);
     font-style: italic;
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--slds-var-spacing-small, 0.75rem);
+    text-align: center;
+    padding: var(--slds-var-spacing-xx-small, 0.25rem);
+}
+
+
+/* Enhanced Action Column Styling - Using SLDS Design Tokens */
+.ai-datatable [data-label="Actions"] {
     text-align: center;
 }
 
-
-/* Enhanced Action Column Styling */
-.ai-datatable [data-label="Actions"] {
-    text-align: center !important;
-}
-
-/* Make action buttons more prominent and button-like */
+/* Action button styling using SLDS tokens */
 .ai-datatable .slds-dropdown-trigger .slds-button_icon-border-filled,
 .ai-datatable .slds-dropdown-trigger .slds-button {
-    background-color: #0176d3 !important;
-    border-color: #0176d3 !important;
-    color: white !important;
-    border-radius: 0.25rem !important;
-    min-width: 70px !important;
-    font-weight: 500 !important;
-    padding: 0.375rem 0.75rem !important;
+    background-color: var(--slds-c-button-brand-color-background, #0176d3);
+    border-color: var(--slds-c-button-brand-color-border, #0176d3);
+    color: var(--slds-c-button-text-color, #fff);
+    border-radius: var(--slds-var-border-radius-small, 0.25rem);
+    min-width: 70px;
+    font-weight: var(--slds-var-font-weight-regular, 400);
+    padding: var(--slds-var-spacing-x-small, 0.375rem) var(--slds-var-spacing-small, 0.75rem);
 }
 
 .ai-datatable .slds-dropdown-trigger .slds-button:hover,
 .ai-datatable .slds-dropdown-trigger .slds-button:focus {
-    background-color: #014486 !important;
-    border-color: #014486 !important;
+    background-color: var(--slds-c-button-brand-color-background-hover, #014486);
+    border-color: var(--slds-c-button-brand-color-border-hover, #014486);
 }
 
-/* Style the dropdown icon to be more visible */
-.ai-datatable .slds-dropdown-trigger .slds-button .slds-button__icon {
-    fill: white !important;
-}
-
-/* Style the action menu items */
+/* Style the action menu items using SLDS tokens */
 .ai-datatable .slds-dropdown__item a {
-    padding: 0.5rem 1rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    font-weight: 500 !important;
+    padding: var(--slds-var-spacing-small, 0.5rem) var(--slds-var-spacing-medium, 1rem);
+    display: flex;
+    align-items: center;
+    gap: var(--slds-var-spacing-small, 0.5rem);
 }
 
 .ai-datatable .slds-dropdown__item a:hover {
-    background-color: #f3f2f2 !important;
+    background-color: var(--slds-c-popover-color-background-hover, #f3f3f3);
 }
 
 /* Responsive behavior for small screens */

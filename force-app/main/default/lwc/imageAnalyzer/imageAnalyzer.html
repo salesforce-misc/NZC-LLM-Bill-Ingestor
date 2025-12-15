@@ -127,9 +127,10 @@
                                 key-field="Id"
                                 hide-checkbox-column="true"
                                 show-row-number-column="false"
-                                resize-column-disabled="false"
-                                sorted-direction="asc"
-                                sorted-by="rowIndex"
+                                resize-column-disabled="true"
+                                sorted-direction={sortedDirection}
+                                sorted-by={sortedBy}
+                                onsort={handleSort}
                                 class="ai-datatable"
                                 onrowaction={handleRowAction}>
                             </lightning-datatable>
