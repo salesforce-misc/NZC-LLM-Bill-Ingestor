@@ -11,7 +11,7 @@
     "test:unit:coverage": "sfdx-lwc-jest --coverage",
     "prettier": "prettier --write \"**/*.{css,html,js,json,md,ts,xml,yaml,yml}\"",
     "prettier:verify": "prettier --list-different \"**/*.{css,html,js,json,md,ts,xml,yaml,yml}\"",
-    "lint": "eslint **/{aura,lwc}/**",
+    "lint": "eslint **/lwc/**",
     "postinstall": "husky install",
     "precommit": "lint-staged",
     "deps:report": "./scripts/generate-dependency-report.sh",
