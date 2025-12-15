@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: Apex Enterprise Patterns (fflib) rules. Only applies when fflib-apex-common is present in the codebase. globs: **/*.cls,**/*.trigger
+alwaysApply: false
 ---
 
 Apex Enterprise Patterns (fflib) — Project Rules

@@ -2,7 +2,6 @@
 description: Generates and validates README.md files for Salesforce Accelerators according to OSPO standards. globs: README.md Help me publish this as an open source accelerator
 alwaysApply: false
 ---
-description: Generates and validates README.md files for Salesforce Accelerators according to OSPO standards. globs: README.md
 
 Accelerator README Standards
 
@@ -34,7 +33,7 @@ Path 1: One-Click Deploy (Admin-Friendly)
 
 You must include the "Deploy to Salesforce" button using this exact Markdown pattern (replace users/repo placeholders):
 
-[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://github.com/afawcett/githubsfdeploy?owner=YOUR_GITHUB_USERNAME&repo=YOUR_REPO_NAME)
+[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com?owner=YOUR_GITHUB_USERNAME&repo=YOUR_REPO_NAME&ref=main)
 
 
 Path 2: Metadata .zip File (Admin-Friendly)

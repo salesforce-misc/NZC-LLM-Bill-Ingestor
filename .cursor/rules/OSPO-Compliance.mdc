@@ -1,8 +1,7 @@
 ---
-description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. globs: *. Help me publish this as an open source accelerator
+description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. globs: * Help me publish this as an open source accelerator
 alwaysApply: false
 ---
-description: Enforces Salesforce OSPO legal and compliance requirements for open-source accelerators. globs: *
 
 OSPO Compliance & Legal Scrubbing Rules
 

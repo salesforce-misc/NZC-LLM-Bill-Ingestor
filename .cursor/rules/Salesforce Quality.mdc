@@ -2,8 +2,6 @@
 description: Enforces technical hygiene, security standards, and best practices for Salesforce Accelerators. globs: **/*.{cls,js,html,xml,json} Help me publish this as an open source accelerator
 alwaysApply: false
 ---
-description: Enforces technical hygiene, security standards, and best practices for Salesforce Accelerators.
-globs: **/*.{cls,js,html,xml,json}
 
 Technical Hygiene & Quality Standards
 

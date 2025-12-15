@@ -5,36 +5,31 @@ alwaysApply: true
 # Project Structure Reference
 
 ## Overview
-This project contains a comprehensive summary document that provides an LLM-optimized overview of the entire codebase structure, architecture, and components.
+This project is a Salesforce Accelerator for AI-powered bill processing and energy consumption tracking in Net Zero Cloud.
 
-## Primary Reference Document
-**File**: `REPOSITORY_SUMMARY.md` (located in the project root)
+## Project Structure
+- **force-app/main/default/**: Main metadata directory
+  - **classes/**: Apex classes (controllers, utilities)
+  - **lwc/**: Lightning Web Components
+  - **flows/**: Salesforce Flows
+  - **genAiPromptTemplates/**: Einstein AI prompt templates
 
 ## When to Use
-**ALWAYS** read `REPOSITORY_SUMMARY.md` first when you need to:
-- Understand the overall project structure
-- Learn about the technology stack and architecture
-- Identify which components exist and their purposes
-- Find relationships between different parts of the codebase
-- Get context before making changes or answering questions about the project
-- Understand the data model and key objects
-- Learn about the deployment and development workflow
+When you need to understand the project structure:
+1. **First**: Read the `README.md` for project overview and architecture
+2. **Then**: Use specific tools (codebase_search, grep, read_file) to explore components
+3. **Finally**: Make informed decisions based on comprehensive context
 
-## Why This File
-The `REPOSITORY_SUMMARY.md` file contains:
-- Complete project overview and technology stack
-- Detailed component architecture (LWC, Apex, Flows)
-- Data model and object relationships
-- Key features and functionalities
-- Directory structure and organization
-- Development guidelines and best practices
-- Integration points and external dependencies
-
-This file is specifically formatted to be easily consumable by LLMs, providing quick context without requiring extensive codebase exploration.
+## Key Components
+- **imageAnalyzer**: Main LWC component for file upload and AI analysis
+- **AIFileAnalysisController**: Apex controller handling AI processing
+- **MultipleJSONParser**: Utility for parsing complex JSON structures
+- **Process_AI_Analysis_Result**: Flow for additional processing workflows
 
 ## Workflow
-1. **First**: Read `REPOSITORY_SUMMARY.md` to understand the project
-2. **Then**: Use specific tools (codebase_search, grep, read_file) to dive into relevant components
-3. **Finally**: Make informed decisions based on comprehensive context
+1. Start with `README.md` for high-level understanding
+2. Use `codebase_search` to find related components
+3. Read specific files using `read_file` for detailed implementation
+4. Use `grep` to find usages and relationships
 
 By following this approach, you'll have better context for all tasks and provide more accurate, architecture-aware responses.
