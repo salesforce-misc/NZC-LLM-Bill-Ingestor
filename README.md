@@ -124,7 +124,7 @@ After deploying with any method above, complete these manual steps:
    - Verify the `Analyze_Files` prompt template is active
 
 3. **Verify Einstein Credits**
-   - Check that you have sufficient Einstein credits available (check Digital Wallet App, see [here]([url](https://help.salesforce.com/s/articleView?id=xcloud.wallet_permissions.htm&type=5)) for required permissions)
+   - Check that you have sufficient Einstein credits available (check Digital Wallet App, see [here](https://help.salesforce.com/s/articleView?language=en_US&id=xcloud.wallet_permissions.htm&type=5)) for required permissions)
    - Credits are consumed per AI analysis request
 
 4. **Configure Net Zero Cloud**
