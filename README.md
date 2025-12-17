@@ -140,7 +140,7 @@ After deploying with any method above, complete these manual steps:
 
 ### 📱 **Adding Components to Lightning Pages**
 
-1. **Navigate** to your target Lightning Page (Stationary Asset Environmental Source, Home, etc.)
+1. **Navigate** to the Stationary Asset Environmental Source Object Lightning Page
 2. **Edit** the page using the Lightning App Builder
 3. **Find** the `Image Analyzer` component in the Custom Components section
 4. **Drag** the component to your desired location
