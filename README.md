@@ -51,7 +51,7 @@ Before you begin, ensure you have the following:
 - ✅ **Salesforce CLI** (latest version recommended)
 - ✅ **Salesforce user** with deployment permissions
 - ✅ **Active Salesforce org** (Sandbox or Developer Edition)
-- ✅ **Einstein AI** features enabled in your org
+- ✅ **Einstein AI** features enabled in your org (Setup > Einstein Setup > Enable Turn on Einstein, if it's not already turned on)
 
 ### 🔧 Installation
 
@@ -116,15 +116,15 @@ cci flow run dev_org --org dev
 After deploying with any method above, complete these manual steps:
 
 1. **Enable Einstein AI Platform**
-   - Navigate to Setup → Einstein Platform
-   - Enable Einstein AI features if not already enabled
+   - Navigate to Setup → Einstein Setup
+   - Toggle on Turn on Einstein if not already enabled
 
 2. **Access Prompt Template Builder**
-   - Ensure you have access to Prompt Template Builder
+   - Ensure you have access to Prompt Template Builder (Setup > Einstein Generative AI > Prompt Builder)
    - Verify the `Analyze_Files` prompt template is active
 
 3. **Verify Einstein Credits**
-   - Check that you have sufficient Einstein credits available
+   - Check that you have sufficient Einstein credits available (check Digital Wallet App, see [here](https://help.salesforce.com/s/articleView?language=en_US&id=xcloud.wallet_permissions.htm&type=5) for required permissions)
    - Credits are consumed per AI analysis request
 
 4. **Configure Net Zero Cloud**
@@ -140,11 +140,11 @@ After deploying with any method above, complete these manual steps:
 
 ### 📱 **Adding Components to Lightning Pages**
 
-1. **Navigate** to your target Lightning Page (Home, Account, etc.)
+1. **Navigate** to the Stationary Asset Environmental Source Object Lightning Page
 2. **Edit** the page using the Lightning App Builder
 3. **Find** the `Image Analyzer` component in the Custom Components section
 4. **Drag** the component to your desired location
-5. **Configure** component properties as needed
+5. **Configure** component properties as needed (flow name: Process_AI_Analysis_Result)
 6. **Save** and **Activate** the page
 
 ### 🔄 **Processing Bills**
