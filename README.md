@@ -23,17 +23,20 @@
 ## ✨ Features
 
 ### 🤖 **AI-Powered Analysis**
+
 - **Smart Bill Processing**: Leverages Einstein AI to automatically extract key information from utility bills
 - **Multi-Format Support**: Processes various file formats including images and PDFs
 - **Intelligent Data Extraction**: Automatically identifies account names, consumption data, and billing periods
 
 ### 🏗️ **Salesforce Integration**
+
 - **Net Zero Cloud Compatible**: Seamlessly integrates with Salesforce Net Zero Cloud for sustainability tracking
 - **Lightning Web Components**: Modern, responsive UI built with Lightning Web Components
 - **Flow Integration**: Includes pre-built flows for automated record processing
 - **Energy Use Record Creation**: Automatically creates `StnryAssetEnrgyUse` records from analyzed data
 
 ### 📊 **Energy Management**
+
 - **Consumption Tracking**: Monitors electricity usage across multiple sites
 - **Historical Data**: Maintains comprehensive records of energy consumption patterns
 - **Multi-Site Support**: Handles bills containing data for multiple locations
@@ -57,7 +60,7 @@ Before you begin, ensure you have the following:
 
 Choose your preferred deployment method:
 
-#### 🎯 Option 1: One-Click GitHub Deploy *(Recommended)*
+#### 🎯 Option 1: One-Click GitHub Deploy _(Recommended)_
 
 Click the **"Deploy to Salesforce"** button above for instant deployment to your org.
 
@@ -166,6 +169,7 @@ After deploying with any method above, complete these manual steps:
 ## 🏗️ Technical Architecture
 
 This accelerator contains the following metadata:
+
 - **2 Lightning Web Components** (`imageAnalyzer`, `energyRecordDetail`)
 - **2 Apex Classes** (`AIFileAnalysisController`, `MultipleJSONParser`)
 - **1 Flow** (`Process_AI_Analysis_Result`)
@@ -187,12 +191,12 @@ graph TB
 
 ### 🧩 **Key Components**
 
-| Component | Description |
-|-----------|-------------|
-| `imageAnalyzer` | Lightning Web Component for file upload and AI analysis |
-| `AIFileAnalysisController` | Apex controller handling AI processing and record creation |
-| `MultipleJSONParser` | Utility class for parsing complex JSON structures |
-| `Process_AI_Analysis_Result` | Flow for additional processing workflows |
+| Component                    | Description                                                |
+| ---------------------------- | ---------------------------------------------------------- |
+| `imageAnalyzer`              | Lightning Web Component for file upload and AI analysis    |
+| `AIFileAnalysisController`   | Apex controller handling AI processing and record creation |
+| `MultipleJSONParser`         | Utility class for parsing complex JSON structures          |
+| `Process_AI_Analysis_Result` | Flow for additional processing workflows                   |
 
 ---
 
@@ -226,6 +230,7 @@ This project is licensed under the **MIT License** - see the [LICENSE.md](LICENS
 Found a bug or have a feature request? Please report it via [GitHub Issues](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor/issues).
 
 When reporting bugs, please include:
+
 - Steps to reproduce the issue
 - Expected vs. actual behavior
 - Salesforce org version and edition

@@ -5,6 +5,7 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
 ## How to Contribute
 
 ### 1. Fork and Clone
+
 1. Fork this repository to your GitHub account
 2. Clone your fork locally:
    ```bash
@@ -12,6 +13,7 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
    ```
 
 ### 2. Set Up Development Environment
+
 1. Ensure you have Salesforce CLI installed
 2. Set up your scratch org or development org
 3. Install dependencies:
@@ -20,6 +22,7 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
    ```
 
 ### 3. Make Your Changes
+
 1. Create a new branch for your feature:
    ```bash
    git checkout -b feature/your-feature-name
@@ -33,6 +36,7 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
    ```
 
 ### 4. Submit a Pull Request
+
 1. Commit your changes with descriptive messages
 2. Push your branch to your fork
 3. Open a pull request with:
@@ -43,18 +47,21 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
 ## Coding Standards
 
 ### Apex Code
+
 - Follow Salesforce Apex best practices
 - Use meaningful variable and method names
 - Include proper error handling
 - Add comprehensive test coverage (minimum 85%)
 
 ### Lightning Web Components
+
 - Follow Lightning Web Components best practices
 - Use proper component lifecycle methods
 - Implement proper error handling
 - Write unit tests for JavaScript logic
 
 ### Documentation
+
 - Update README.md for significant changes
 - Add inline comments for complex logic
 - Update any relevant documentation
@@ -80,14 +87,3 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
 - Reach out to maintainers for guidance
 
 Thank you for contributing to make this project better!
-
-
-
-
-
-
-
-
-
-
-
