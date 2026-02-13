@@ -14,8 +14,9 @@
         <name>GenAiPromptTemplate</name>
     </types>
     <types>
+        <members>energyRecordDetail</members>
         <members>imageAnalyzer</members>
         <name>LightningComponentBundle</name>
     </types>
-    <version>62.0</version>
+    <version>64.0</version>
 </Package>

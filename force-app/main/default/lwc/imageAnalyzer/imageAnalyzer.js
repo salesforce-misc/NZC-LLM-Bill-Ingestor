@@ -76,10 +76,12 @@ export default class AIFileAnalysisController extends NavigationMixin(
             const label = key
               .replace(/_/g, " ")
               .replace(/\b\w/g, (char) => char.toUpperCase());
+            const rawValue = parsed[key];
+            const value = this._formatDisplayValue(rawValue, key);
             return {
               id: key,
               label: label,
-              value: parsed[key]
+              value: value
             };
           })
         };
@@ -192,7 +194,7 @@ export default class AIFileAnalysisController extends NavigationMixin(
             },
             fixedWidth: 110,
             cellAttributes: {
-              class: "slds-text-align_center"
+              class: "ai-action-cell"
             }
           });
         }
@@ -227,6 +229,36 @@ export default class AIFileAnalysisController extends NavigationMixin(
   /**
    * Helper getter to check if the result is a single object
    */
+  /** Keys that receive comma separators (amount_due, kilowatts_consumed, charge_amount_electricity) */
+  static _COMMA_FORMAT_KEYS = new Set([
+    "amount_due",
+    "kilowatts_consumed",
+    "charge_amount_electricity"
+  ]);
+
+  /**
+   * Format display value for analysis result table. Null/empty renders "-".
+   * Only amount_due, kilowatts_consumed, charge_amount_electricity get comma separators.
+   */
+  _formatDisplayValue(value, key) {
+    if (value === null || value === undefined || value === "") {
+      return "-";
+    }
+    const str = String(value).trim();
+    if (str === "") return "-";
+    if (
+      this.constructor._COMMA_FORMAT_KEYS.has(String(key).toLowerCase()) &&
+      !str.includes("/") &&
+      !/[a-zA-Z]/.test(str)
+    ) {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && Number.isFinite(numValue)) {
+        return numValue.toLocaleString("en-US");
+      }
+    }
+    return str;
+  }
+
   get isSingleResult() {
     return this.formattedResult && this.formattedResult.type === "single";
   }

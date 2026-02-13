@@ -1,36 +1,28 @@
 <template>
   <div class="ai-glass-card">
-    <!-- Header updated with a new SVG icon -->
+    <!-- Header with centered title -->
     <div class="ai-header">
       <div class="ai-avatar">
-        <!-- This new SVG is simpler and more reliable for deployment -->
-        <svg viewBox="0 0 64 64" class="ai-hero-icon">
+        <svg viewBox="0 0 64 64" class="ai-hero-icon" aria-hidden="true">
           <g>
-            <!-- Tree Trunk -->
             <path
+              class="ai-tree-trunk"
               d="M 30 58 L 30 42 C 30 40 32 40 32 42 L 32 58 Z"
-              fill="#795548"
             />
-            <!-- Tree Leaves -->
-            <circle cx="31" cy="28" r="14" fill="#4CAF50" />
-            <circle cx="22" cy="34" r="10" fill="#66BB6A" />
-            <circle cx="40" cy="34" r="10" fill="#81C784" />
+            <circle class="ai-tree-leaf-main" cx="31" cy="28" r="14" />
+            <circle class="ai-tree-leaf-left" cx="22" cy="34" r="10" />
+            <circle class="ai-tree-leaf-right" cx="40" cy="34" r="10" />
           </g>
         </svg>
       </div>
-      <div>
-        <div class="ai-title">
-          Bill Importer<span class="ai-blink">✨</span>
-        </div>
-        <div class="ai-caption">Let AI import your Bills instantly</div>
-      </div>
+      <div class="ai-title">Bill Importer</div>
     </div>
 
     <!-- File upload and selection section -->
 
     <lightning-tabset active-tab-value="upload" variant="scoped">
       <lightning-tab label="Upload New File" value="upload">
-        <div class="ai-upload-wrapper slds-p-around_medium">
+        <div class="ai-upload-wrapper ai-p-around">
           <lightning-file-upload
             label="Upload Image or PDF"
             name="uploadFile"
@@ -43,8 +35,8 @@
         </div>
       </lightning-tab>
       <lightning-tab label="Select Existing File" value="existing">
-        <div class="slds-p-around_medium">
-          <template if:true={hasFiles}>
+        <div class="ai-p-around">
+          <template lwc:if={hasFiles}>
             <lightning-combobox
               name="existingFiles"
               label="Choose a file from this record"
@@ -55,10 +47,8 @@
             >
             </lightning-combobox>
           </template>
-          <template if:false={hasFiles}>
-            <div
-              class="slds-text-align_center slds-p-vertical_medium slds-text-color_weak"
-            >
+          <template lwc:else>
+            <div class="ai-empty-files">
               No existing files found on this record.
             </div>
           </template>
@@ -67,8 +57,8 @@
     </lightning-tabset>
 
     <!-- Selected file display remains the same -->
-    <template if:true={uploadedFileName}>
-      <div class="ai-uploaded-file slds-m-left_medium slds-m-right_medium">
+    <template lwc:if={uploadedFileName}>
+      <div class="ai-uploaded-file ai-m-horizontal">
         <lightning-icon
           icon-name="doctype:image"
           size="x-small"
@@ -77,25 +67,27 @@
       </div>
     </template>
 
-    <!-- Analyze button remains the same -->
-    <lightning-button
-      variant="brand"
-      label="Analyze Selected File"
-      icon-name="utility:einstein"
-      class="ai-analyze-btn slds-m-top_medium"
-      disabled={disableAnalyzeButton}
-      onclick={handleAnalyzeFiles}
-    >
-    </lightning-button>
+    <!-- Analyze button -->
+    <div class="ai-analyze-btn-wrapper ai-m-top">
+      <lightning-button
+        variant="brand"
+        label="Analyze Selected File"
+        icon-name="utility:einstein"
+        class="ai-analyze-btn"
+        disabled={disableAnalyzeButton}
+        onclick={handleAnalyzeFiles}
+      >
+      </lightning-button>
+    </div>
 
     <!-- Loading and Error sections remain the same -->
-    <template if:true={isLoading}>
+    <template lwc:if={isLoading}>
       <div class="ai-loading">
         <div class="ai-loader"></div>
         <span class="ai-analyzing">Analyzing with AI…</span>
       </div>
     </template>
-    <template if:true={errorMessage}>
+    <template lwc:if={errorMessage}>
       <div class="ai-error">
         <lightning-icon
           icon-name="utility:error"
@@ -106,10 +98,10 @@
     </template>
 
     <!-- NEW: Updated AI Analysis Result Section -->
-    <template if:true={aiResult}>
+    <template lwc:if={aiResult}>
       <div class="ai-result">
         <!-- Display single object result -->
-        <template if:true={isSingleResult}>
+        <template lwc:if={isSingleResult}>
           <div class="ai-result-single">
             <h3 class="ai-result-title">
               <lightning-icon
@@ -118,9 +110,7 @@
               ></lightning-icon>
               Analysis Result
             </h3>
-            <table
-              class="slds-table slds-table_cell-buffer slds-table_bordered ai-result-table"
-            >
+            <table class="ai-result-table ai-table">
               <tbody>
                 <template for:each={resultData} for:item="item">
                   <tr key={item.id}>
@@ -134,7 +124,7 @@
         </template>
 
         <!-- Display array of objects result using lightning-datatable -->
-        <template if:true={isArrayResult}>
+        <template lwc:elseif={isArrayResult}>
           <div class="ai-result-array">
             <h3 class="ai-result-title">
               <lightning-icon
@@ -175,7 +165,7 @@
         </template>
 
         <!-- Otherwise, fall back to the original rich text display -->
-        <template if:false={formattedResult}>
+        <template lwc:else>
           <div class="ai-result-raw">
             <lightning-icon
               icon-name="utility:bot"
@@ -192,12 +182,7 @@
       <div class="ai-actions-group">
         <lightning-button-group>
           <lightning-button
-            variant="neutral"
-            label="Copy"
-            icon-name="utility:copy"
-            onclick={handleCopyToClipboard}
-          ></lightning-button>
-          <lightning-button
+            class="ai-action-btn"
             variant="success"
             label="Create Energy Records"
             icon-name="utility:add"
@@ -205,19 +190,26 @@
             disabled={disableCreateRecordsButton}
           >
           </lightning-button>
+          <lightning-button
+            class="ai-action-btn"
+            variant="neutral"
+            label="Copy"
+            icon-name="utility:copy"
+            onclick={handleCopyToClipboard}
+          ></lightning-button>
         </lightning-button-group>
 
         <!-- Loading indicator for record creation -->
-        <template if:true={isCreatingRecords}>
-          <div class="ai-loading slds-m-top_small">
+        <template lwc:if={isCreatingRecords}>
+          <div class="ai-loading ai-m-top-small">
             <div class="ai-loader-small"></div>
             <span class="ai-analyzing">Creating energy use records...</span>
           </div>
         </template>
 
         <!-- Success message showing created record count -->
-        <template if:true={createdRecordIds.length}>
-          <div class="ai-success slds-m-top_small">
+        <template lwc:if={createdRecordIds.length}>
+          <div class="ai-success ai-m-top-small">
             <lightning-icon
               icon-name="utility:success"
               size="x-small"
@@ -229,7 +221,7 @@
           </div>
         </template>
 
-        <template if:true={showActionToast}>
+        <template lwc:if={showActionToast}>
           <div class="ai-action-toast">{actionToastMessage}</div>
         </template>
       </div>

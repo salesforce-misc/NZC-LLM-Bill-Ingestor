@@ -1,5 +1,5 @@
 <template>
-  <template if:true={showComponent}>
+  <template lwc:if={showComponent}>
     <div class="detail-container">
       <!-- Header with title and close button -->
       <div class="detail-header">
@@ -23,7 +23,7 @@
 
       <!-- Content area -->
       <div class="detail-content">
-        <template if:true={recordData}>
+        <template lwc:if={recordData}>
           <div class="detail-grid">
             <template for:each={detailFields} for:item="field">
               <div
@@ -39,7 +39,7 @@
         </template>
 
         <!-- Empty state -->
-        <template if:false={recordData}>
+        <template lwc:else>
           <div class="detail-empty">
             <lightning-icon
               icon-name="utility:info"

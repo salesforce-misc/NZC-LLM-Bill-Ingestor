@@ -3,58 +3,814 @@ description: Generates and validates README.md files for Salesforce Accelerators
 alwaysApply: false
 ---
 
-Accelerator README Standards
+# Accelerator README Template & Standards
 
-Trigger: Apply these rules when generating, editing, or reviewing the README.md.
+## Purpose
 
-1. Required Structure
+This template provides a comprehensive structure for creating professional, OSPO-compliant README.md files for Salesforce Accelerators. Use this template to ensure consistency, accessibility, and completeness across all accelerator documentation.
 
-The README must strictly follow this outline:
+**Trigger:** Apply these rules when generating, editing, or reviewing the README.md file.
 
-Project Title & Purpose: Clear statement of the business problem solved.
+---
 
-Features: High-level list of capabilities.
+## 1. Required Structure
 
-Technical Architecture: Overview of metadata (e.g., "Contains 2 LWCs, 1 Apex Class, 1 Flow").
+The README must follow this complete structure in order:
 
-Installation Instructions: (See Section 2 below).
+1. **Title with Emoji** - Project name with descriptive emoji
+2. **Tagline** - Brief description in blockquote format
+3. **Badges Section** - Technology/product badges using shields.io
+4. **Quick Deploy Section** - Centered deploy button with optional note
+5. **Features Section** - Organized with emoji subsections and bullet points
+6. **Getting Started** - Prerequisites checklist and installation options
+7. **Post-Deployment Configuration** - Numbered manual steps
+8. **Usage Section** - Step-by-step instructions with emoji headers
+9. **Technical Architecture** - Metadata list, optional mermaid diagram, component table
+10. **Contributing** - Fork/PR workflow with development guidelines
+11. **License** - License reference
+12. **Bug Reporting** - GitHub Issues link with reporting guidelines
+13. **Support** - Multiple support channels with emojis
+14. **Disclaimer** - OSPO-compliant disclaimer
+15. **Footer** - Centered call-to-action (optional)
 
-Post-Installation Steps: Manual steps (e.g., Assign Permission Sets, Activate Flows).
+---
 
-How to Report Bugs: Link to GitHub Issues tab.
+## 2. Section Templates
 
-Disclaimer: "This accelerator is open-source, not an official Salesforce product, and is community-supported."
+### 2.1 Title and Tagline
 
-2. Mandatory Installation Paths
+**Template:**
+```markdown
+# {{EMOJI}} {{PROJECT_NAME}}
 
-You MUST provide these three specific installation methods in the README:
+> **{{TAGLINE_DESCRIPTION}}**
+```
 
-Path 1: One-Click Deploy (Admin-Friendly)
+**Example:**
+```markdown
+# 📋 NZC LLM Bill Ingestor
 
-You must include the "Deploy to Salesforce" button using this exact Markdown pattern (replace users/repo placeholders):
+> **A powerful AI-powered solution for automated bill processing and energy consumption tracking in Salesforce Net Zero Cloud**
+```
 
-[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com?owner=YOUR_GITHUB_USERNAME&repo=YOUR_REPO_NAME&ref=main)
+**Guidelines:**
+- Use a single, relevant emoji that represents the project (📋, 🚀, ⚡, 🔧, etc.)
+- Keep tagline to one sentence, maximum 2 lines
+- Use bold formatting for emphasis in tagline
 
+---
 
-Path 2: Metadata .zip File (Admin-Friendly)
+### 2.2 Badges Section
 
-Instruct the user to download the .zip from the GitHub "Releases" tab.
+**Template:**
+```markdown
+[![Salesforce](https://img.shields.io/badge/Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://salesforce.com)
+[![{{PRODUCT_NAME}}](https://img.shields.io/badge/{{PRODUCT_NAME}}-{{COLOR_CODE}}?style=for-the-badge&logo=salesforce&logoColor=white)]({{PRODUCT_URL}})
+[![{{TECHNOLOGY}}](https://img.shields.io/badge/{{TECHNOLOGY}}-{{COLOR_CODE}}?style=for-the-badge&logo={{LOGO}}&logoColor=white)]({{TECHNOLOGY_URL}})
+```
 
-Provide instructions to deploy using Workbench, Salesforce Inspector, or Ant Migration Tool.
+**Guidelines:**
+- Include 2-4 relevant badges
+- Always include Salesforce badge
+- Use `for-the-badge` style for consistency
+- Common colors: `00A1E0` (Salesforce blue), `FFB000` (gold), `1798C1` (Lightning blue)
+- Use underscores for multi-word badge labels (e.g., `Net_Zero_Cloud`)
 
-Path 3: Pro-Code / CI/CD (Developer-Friendly)
+**Example:**
+```markdown
+[![Salesforce](https://img.shields.io/badge/Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://salesforce.com)
+[![Net Zero Cloud](https://img.shields.io/badge/Net_Zero_Cloud-FFB000?style=for-the-badge&logo=salesforce&logoColor=white)](https://help.salesforce.com/s/articleView?id=sf.net_zero_cloud_intro.htm)
+[![Lightning](https://img.shields.io/badge/Lightning-1798C1?style=for-the-badge&logo=salesforce&logoColor=white)](https://developer.salesforce.com/docs/platform/lwc/guide)
+```
 
-Provide CLI commands:
+---
 
-sf project deploy start --target-org <org-alias>
-# OR
-sfdx force:source:deploy ...
+### 2.3 Quick Deploy Section
 
+**Template:**
+```markdown
+## 🚀 Quick Deploy
 
-Mention compatibility with CI/CD tools like Gearset or Copado.
+<div align="center">
 
-3. Tone and Style
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com?owner={{GITHUB_USERNAME}}&repo={{REPO_NAME}}&ref=main)
 
-The README is the "Storefront". It must be accessible to Admins (non-coders) and Developers alike.
+**One-click deployment to your Salesforce org**
 
-Do not assume the user knows how to use a CLI for Path 1 or 2.
+> **Note:** {{OPTIONAL_NOTE_TEXT}} Alternatively, use the [Salesforce CLI deployment method](#-option-3-salesforce-cli-deployment) below.
+
+</div>
+
+---
+```
+
+**Guidelines:**
+- Use centered div for visual appeal
+- Include descriptive text below button
+- Add optional note about authentication or alternatives
+- Use horizontal rule (---) after section
+
+**Placeholders to Replace:**
+- `{{GITHUB_USERNAME}}` - Your GitHub username or organization
+- `{{REPO_NAME}}` - Your repository name
+- `{{OPTIONAL_NOTE_TEXT}}` - Optional note about deployment (can be removed if not needed)
+
+---
+
+### 2.4 Features Section
+
+**Template:**
+```markdown
+## ✨ Features
+
+### {{EMOJI}} **{{FEATURE_CATEGORY_1}}**
+
+- **{{Feature Name}}**: {{Feature description}}
+- **{{Feature Name}}**: {{Feature description}}
+- **{{Feature Name}}**: {{Feature description}}
+
+### {{EMOJI}} **{{FEATURE_CATEGORY_2}}**
+
+- **{{Feature Name}}**: {{Feature description}}
+- **{{Feature Name}}**: {{Feature description}}
+
+### {{EMOJI}} **{{FEATURE_CATEGORY_3}}**
+
+- **{{Feature Name}}**: {{Feature description}}
+- **{{Feature Name}}**: {{Feature description}}
+
+---
+```
+
+**Guidelines:**
+- Use 2-4 feature categories
+- Each category should have 2-4 bullet points
+- Use emojis that match category theme (🤖 for AI, 🏗️ for integration, 📊 for analytics, etc.)
+- Bold feature names, use descriptive text after colon
+- Use horizontal rule (---) after section
+
+**Example:**
+```markdown
+## ✨ Features
+
+### 🤖 **AI-Powered Analysis**
+
+- **Smart Bill Processing**: Leverages Einstein AI to automatically extract key information from utility bills
+- **Multi-Format Support**: Processes various file formats including images and PDFs
+- **Intelligent Data Extraction**: Automatically identifies account names, consumption data, and billing periods
+
+### 🏗️ **Salesforce Integration**
+
+- **Net Zero Cloud Compatible**: Seamlessly integrates with Salesforce Net Zero Cloud for sustainability tracking
+- **Lightning Web Components**: Modern, responsive UI built with Lightning Web Components
+- **Flow Integration**: Includes pre-built flows for automated record processing
+```
+
+---
+
+### 2.5 Getting Started Section
+
+#### 2.5.1 Prerequisites
+
+**Template:**
+```markdown
+## 🚀 Getting Started
+
+### 📋 Prerequisites
+
+Before you begin, ensure you have the following:
+
+- ✅ **{{Prerequisite 1}}** {{Description}}
+- ✅ **{{Prerequisite 2}}** {{Description}}
+- ✅ **{{Prerequisite 3}}** {{Description}}
+- ✅ **{{Prerequisite 4}}** {{Description}}
+- ✅ **{{Prerequisite 5}}** {{Description}}
+```
+
+**Guidelines:**
+- List 4-7 prerequisites
+- Use checkmark emoji (✅) for visual clarity
+- Bold prerequisite names
+- Include brief descriptions or setup instructions
+
+**Example:**
+```markdown
+### 📋 Prerequisites
+
+Before you begin, ensure you have the following:
+
+- ✅ **Salesforce Net Zero Cloud** licensed and configured
+- ✅ **Git** installed on your local machine
+- ✅ **Salesforce CLI** (latest version recommended)
+- ✅ **Salesforce user** with deployment permissions
+- ✅ **Active Salesforce org** (Sandbox or Developer Edition)
+- ✅ **Einstein AI** features enabled in your org (Setup > Einstein Setup > Enable Turn on Einstein, if it's not already turned on)
+```
+
+#### 2.5.2 Installation Options
+
+**MANDATORY: You MUST provide these three installation methods:**
+
+##### Option 1: One-Click GitHub Deploy (Admin-Friendly)
+
+**Template:**
+```markdown
+### 🔧 Installation
+
+Choose your preferred deployment method:
+
+#### 🎯 Option 1: One-Click GitHub Deploy _(Recommended)_
+
+Click the **"Deploy to Salesforce"** button above for instant deployment to your org.
+```
+
+##### Option 2: Workbench Deployment (Admin-Friendly)
+
+**Template:**
+```markdown
+#### 📦 Option 2: Workbench Deployment
+
+For environments where GitHub access is restricted:
+
+1. **Download** the pre-built deployment package:
+   - Direct download: [{{PROJECT_NAME}}-Deploy.zip](./{{PROJECT_NAME}}-Deploy.zip)
+   - Or download from the [GitHub Releases](https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}/releases) tab
+2. **Navigate** to [Salesforce Workbench](https://workbench.developerforce.com/login.php)
+3. **Login** to your target org
+4. **Go to** Migration → Deploy
+5. **Upload** the zip file and deploy
+
+**Alternative Tools:** You can also deploy using [Salesforce Inspector](https://chrome.google.com/webstore/detail/salesforce-inspector/aodjmnfhjibkcdimpodiifdjnnncaafh) or the [Ant Migration Tool](https://developer.salesforce.com/docs/atlas.en-us.daas.meta/daas/forcemigrationtool_install.htm).
+```
+
+##### Option 3: Salesforce CLI Deployment (Developer-Friendly)
+
+**Template:**
+```markdown
+#### 🛠️ Option 3: Salesforce CLI Deployment
+
+For developers who prefer command-line tools:
+
+##### 3.1 Clone the Repository
+
+```bash
+git clone https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}.git
+cd {{REPO_NAME}}
+```
+
+##### 3.2 Authorize Your Org
+
+```bash
+# For sandbox/production orgs
+sfdx auth:web:login --setalias MyOrg --instanceurl https://test.salesforce.com
+
+# For developer orgs
+sfdx auth:web:login --setalias MyOrg
+```
+
+##### 3.3 Deploy the Metadata
+
+```bash
+# Deploy all components (Salesforce CLI v2)
+sf project deploy start --source-dir force-app --target-org MyOrg
+
+# Or using legacy sfdx command
+sfdx force:source:deploy -p force-app -u MyOrg
+
+# Or use CumulusCI (if configured)
+cci flow run dev_org --org dev
+```
+
+**Note:** This accelerator is compatible with CI/CD tools like Gearset, Copado, and Flosum.
+```
+
+**Guidelines:**
+- Number options clearly (Option 1, 2, 3)
+- Use emojis for visual distinction (🎯, 📦, 🛠️)
+- Mark Option 1 as _(Recommended)_
+- Provide clear step-by-step instructions
+- Include alternative tools where applicable
+- Mention CI/CD compatibility
+
+---
+
+#### 2.5.3 Post-Deployment Configuration
+
+**Template:**
+```markdown
+#### ⚡ Post-Deployment Configuration
+
+After deploying with any method above, complete these manual steps:
+
+1. **{{Step Title}}**
+   - {{Sub-step or description}}
+   - {{Additional detail if needed}}
+
+2. **{{Step Title}}**
+   - {{Sub-step or description}}
+   - {{Additional detail if needed}}
+
+3. **{{Step Title}}**
+   - {{Sub-step or description}}
+
+4. **{{Step Title}}**
+   - {{Sub-step or description}}
+
+5. **{{Step Title}}**
+   - {{Sub-step or description}}
+   - Follow the [Usage instructions](#-usage) below to {{action}}
+```
+
+**Guidelines:**
+- List 3-6 post-deployment steps
+- Use numbered list for sequential steps
+- Bold step titles
+- Include sub-bullets for detailed instructions
+- Reference other sections when appropriate (e.g., Usage section)
+
+**Example:**
+```markdown
+#### ⚡ Post-Deployment Configuration
+
+After deploying with any method above, complete these manual steps:
+
+1. **Enable Einstein AI Platform**
+   - Navigate to Setup → Einstein Setup
+   - Toggle on Turn on Einstein if not already enabled
+
+2. **Access Prompt Template Builder**
+   - Ensure you have access to Prompt Template Builder (Setup > Einstein Generative AI > Prompt Builder)
+   - Verify the `Analyze_Files` prompt template is active
+```
+
+---
+
+### 2.6 Usage Section
+
+**Template:**
+```markdown
+## 🎯 Usage
+
+### {{EMOJI}} **{{Usage Scenario 1}}**
+
+1. **{{Action}}** {{Description}}
+2. **{{Action}}** {{Description}}
+3. **{{Action}}** {{Description}}
+4. **{{Action}}** {{Description}}
+5. **{{Action}}** {{Description}}
+
+### {{EMOJI}} **{{Usage Scenario 2}}**
+
+1. **{{Action}}** {{Description}}
+2. **{{Action}}** {{Description}}
+3. **{{Action}}** {{Description}}
+
+### {{EMOJI}} **{{Usage Scenario 3}}**
+
+- **{{Item}}** {{Description}}
+- **{{Item}}** {{Description}}
+- **{{Item}}** {{Description}}
+
+---
+```
+
+**Guidelines:**
+- Provide 2-4 usage scenarios
+- Use numbered lists for sequential steps
+- Use bullet lists for non-sequential information
+- Bold action words or key items
+- Use relevant emojis (📱, 🔄, 📊, etc.)
+
+**Example:**
+```markdown
+## 🎯 Usage
+
+### 📱 **Adding Components to Lightning Pages**
+
+1. **Navigate** to the Stationary Asset Environmental Source Object Lightning Page
+2. **Edit** the page using the Lightning App Builder
+3. **Find** the `Image Analyzer` component in the Custom Components section
+4. **Drag** the component to your desired location
+5. **Configure** component properties as needed (flow name: Process_AI_Analysis_Result)
+6. **Save** and **Activate** the page
+```
+
+---
+
+### 2.7 Technical Architecture Section
+
+**Template:**
+```markdown
+## 🏗️ Technical Architecture
+
+This accelerator contains the following metadata:
+
+- **{{COUNT}} Lightning Web Components** (`{{component1}}`, `{{component2}}`)
+- **{{COUNT}} Apex Classes** (`{{class1}}`, `{{class2}}`)
+- **{{COUNT}} Flow{{S}}** (`{{flow1}}`)
+- **{{COUNT}} {{METADATA_TYPE}}{{S}}** (`{{item1}}`, `{{item2}}`)
+
+### Architecture Diagram
+
+```mermaid
+graph TB
+    {{NODE1}}[{{Node Label}}] --> {{NODE2}}[{{Node Label}}]
+    {{NODE2}} --> {{NODE3}}[{{Node Label}}]
+    {{NODE3}} --> {{NODE4}}[{{Node Label}}]
+```
+```
+
+**Guidelines:**
+- List all metadata types with counts
+- Use backticks for component/class names
+- Include mermaid diagram if architecture is complex (optional)
+- Use `graph TB` (top to bottom) for most diagrams
+- Keep node labels concise
+
+**Example:**
+```markdown
+## 🏗️ Technical Architecture
+
+This accelerator contains the following metadata:
+
+- **2 Lightning Web Components** (`imageAnalyzer`, `energyRecordDetail`)
+- **2 Apex Classes** (`AIFileAnalysisController`, `MultipleJSONParser`)
+- **1 Flow** (`Process_AI_Analysis_Result`)
+- **1 Einstein AI Prompt Template** (`Analyze_Files`)
+
+### Architecture Diagram
+
+```mermaid
+graph TB
+    A[Lightning Web Component] --> B[AIFileAnalysisController]
+    B --> C[Einstein AI Prompt Templates]
+    B --> D[MultipleJSONParser]
+    B --> E[StnryAssetEnrgyUse Records]
+    C --> F[AI Analysis Results]
+    F --> G[JSON Parser]
+    G --> E
+    E --> H[Net Zero Cloud]
+```
+```
+
+#### Key Components Table
+
+**Template:**
+```markdown
+### 🧩 **Key Components**
+
+| Component                    | Description                                                |
+| ---------------------------- | ---------------------------------------------------------- |
+| `{{component1}}`             | {{Description}}                                            |
+| `{{component2}}`             | {{Description}}                                            |
+| `{{component3}}`             | {{Description}}                                            |
+```
+
+**Guidelines:**
+- Create table for 3-6 key components
+- Use backticks for component names
+- Keep descriptions concise (1-2 lines max)
+- Align columns properly
+
+---
+
+### 2.8 Contributing Section
+
+**Template:**
+```markdown
+## 🤝 Contributing
+
+We welcome contributions to improve the {{PROJECT_NAME}}! Please follow these steps:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### 📝 **Development Guidelines**
+
+- Follow [Salesforce coding standards](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_best_practices.htm)
+- Include comprehensive test coverage (>75%)
+- Update documentation for new features
+- Test thoroughly in multiple org types
+
+---
+```
+
+**Guidelines:**
+- Use standard GitHub workflow (fork, branch, commit, push, PR)
+- Include development guidelines specific to Salesforce
+- Reference Salesforce coding standards
+- Mention test coverage requirements
+
+---
+
+### 2.9 License Section
+
+**Template:**
+```markdown
+## 📄 License
+
+This project is licensed under the **{{LICENSE_TYPE}}** - see the [LICENSE.md](LICENSE.md) file for details.
+
+---
+```
+
+**Guidelines:**
+- Reference LICENSE.md file
+- Bold the license type
+- Common licenses: MIT License, Apache License 2.0
+
+---
+
+### 2.10 Bug Reporting Section
+
+**Template:**
+```markdown
+## 🐛 How to Report Bugs
+
+Found a bug or have a feature request? Please report it via [GitHub Issues](https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}/issues).
+
+When reporting bugs, please include:
+
+- Steps to reproduce the issue
+- Expected vs. actual behavior
+- Salesforce org version and edition
+- Screenshots or error messages (if applicable)
+```
+
+**Guidelines:**
+- Link to GitHub Issues
+- Provide clear bug reporting checklist
+- Include org version/edition requirement
+
+---
+
+### 2.11 Support Section
+
+**Template:**
+```markdown
+## 🆘 Support
+
+- 📚 **Documentation**: Check our [Wiki](https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}/wiki) for detailed guides
+- 🐛 **Issues**: Report bugs via [GitHub Issues](https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}/issues)
+- 💬 **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}/discussions)
+- 📧 **Contact**: Reach out to the maintainers for enterprise support
+```
+
+**Guidelines:**
+- List 3-5 support channels
+- Use emojis for visual distinction
+- Include links to all channels
+- Bold channel names
+
+---
+
+### 2.12 Disclaimer Section
+
+**Template:**
+```markdown
+## ⚠️ Disclaimer
+
+**This accelerator is open-source, not an official Salesforce product, and is community-supported.** Salesforce does not provide official support for this accelerator. Use at your own risk and test thoroughly in a sandbox environment before deploying to production.
+
+---
+```
+
+**Guidelines:**
+- **MANDATORY:** Must include OSPO-compliant disclaimer
+- Bold the main disclaimer statement
+- Include testing recommendation
+- Use horizontal rule after section
+
+---
+
+### 2.13 Footer (Optional)
+
+**Template:**
+```markdown
+<div align="center">
+
+**Made with ❤️ for the Salesforce Community**
+
+⭐ **Star this repo** if you find it helpful!
+
+</div>
+```
+
+**Guidelines:**
+- Use centered div
+- Keep message friendly and community-focused
+- Include call-to-action (star the repo)
+
+---
+
+## 3. Formatting Guidelines
+
+### 3.1 Emoji Usage
+
+**Common Emojis by Section:**
+- 🚀 Quick Deploy / Getting Started
+- ✨ Features
+- 📋 Prerequisites / Lists
+- 🔧 Installation / Configuration
+- 🎯 Usage
+- 🏗️ Architecture
+- 🤝 Contributing
+- 📄 License
+- 🐛 Bugs
+- 🆘 Support
+- ⚠️ Disclaimer
+- 📱 Mobile/UI
+- 🔄 Process/Workflow
+- 📊 Analytics/Data
+- 🤖 AI/Automation
+
+**Guidelines:**
+- Use one emoji per section header
+- Choose emojis that match section content
+- Be consistent across similar sections
+- Don't overuse emojis (max 1 per header)
+
+### 3.2 Code Blocks
+
+**Template:**
+```markdown
+```bash
+# Command example
+sf project deploy start --source-dir force-app --target-org MyOrg
+```
+```
+
+**Guidelines:**
+- Always specify language (bash, markdown, json, etc.)
+- Use appropriate language tags
+- Include comments for clarity
+- Format commands for readability
+
+### 3.3 Horizontal Rules
+
+Use `---` to separate major sections:
+- After Quick Deploy
+- After Features
+- After Getting Started
+- After Usage
+- After Technical Architecture
+- After Contributing
+- After License
+- After Disclaimer
+
+### 3.4 Bold Text
+
+Use bold (`**text**`) for:
+- Feature names in bullet lists
+- Step titles in numbered lists
+- Key terms and concepts
+- Important warnings or notes
+- License type
+
+### 3.5 Blockquotes
+
+Use blockquotes (`>`) for:
+- Tagline/description at top
+- Important notes or warnings
+- Optional deployment notes
+
+---
+
+## 4. Placeholder Reference
+
+When using this template, replace the following placeholders:
+
+| Placeholder | Description | Example |
+|------------|-------------|---------|
+| `{{PROJECT_NAME}}` | Your project name | `NZC LLM Bill Ingestor` |
+| `{{REPO_NAME}}` | GitHub repository name | `NZC-LLM-Bill-Ingestor` |
+| `{{GITHUB_USERNAME}}` | GitHub username or org | `salesforce-misc` |
+| `{{TAGLINE_DESCRIPTION}}` | One-sentence project description | `A powerful AI-powered solution...` |
+| `{{EMOJI}}` | Relevant emoji for section | `📋`, `🚀`, `✨` |
+| `{{LICENSE_TYPE}}` | License name | `MIT License` |
+| `{{COUNT}}` | Number of items | `2`, `1`, `5` |
+| `{{METADATA_TYPE}}` | Type of metadata | `Einstein AI Prompt Template` |
+| `{{COLOR_CODE}}` | Hex color for badges | `00A1E0`, `FFB000` |
+
+---
+
+## 5. OSPO Compliance Requirements
+
+**MANDATORY Elements:**
+1. ✅ Three installation paths (One-Click, Workbench, CLI)
+2. ✅ OSPO-compliant disclaimer
+3. ✅ License section with reference to LICENSE.md
+4. ✅ Bug reporting section with GitHub Issues link
+5. ✅ Clear project title and purpose
+6. ✅ Technical architecture overview
+7. ✅ Post-installation steps
+
+**Tone Requirements:**
+- Accessible to both Admins and Developers
+- Clear, step-by-step instructions
+- No assumptions about CLI knowledge for admin paths
+- Professional but friendly tone
+
+---
+
+## 6. Quality Checklist
+
+Before finalizing your README, verify:
+
+- [ ] All placeholders replaced with actual values
+- [ ] All three installation paths included
+- [ ] OSPO disclaimer present and correct
+- [ ] License section references LICENSE.md
+- [ ] All links work and point to correct locations
+- [ ] Code blocks have proper language tags
+- [ ] Emojis are consistent and appropriate
+- [ ] Horizontal rules separate major sections
+- [ ] Badges are properly formatted
+- [ ] Mermaid diagrams (if used) are valid
+- [ ] Tables are properly formatted
+- [ ] All sections from required structure are present
+- [ ] Prerequisites are complete and accurate
+- [ ] Post-deployment steps are clear
+- [ ] Usage instructions are actionable
+
+---
+
+## 7. Example Complete Structure
+
+For reference, here's the complete structure in order:
+
+```markdown
+# {{EMOJI}} {{PROJECT_NAME}}
+
+> **{{TAGLINE}}**
+
+[Badges]
+
+## 🚀 Quick Deploy
+[Deploy button and note]
+
+---
+
+## ✨ Features
+[Feature categories with bullets]
+
+---
+
+## 🚀 Getting Started
+### 📋 Prerequisites
+[Checklist]
+
+### 🔧 Installation
+[Three options]
+
+#### ⚡ Post-Deployment Configuration
+[Numbered steps]
+
+---
+
+## 🎯 Usage
+[Usage scenarios]
+
+---
+
+## 🏗️ Technical Architecture
+[Metadata list]
+[Optional mermaid diagram]
+[Component table]
+
+---
+
+## 🤝 Contributing
+[Fork/PR workflow]
+[Development guidelines]
+
+---
+
+## 📄 License
+[License reference]
+
+---
+
+## 🐛 How to Report Bugs
+[GitHub Issues link]
+[Reporting checklist]
+
+## 🆘 Support
+[Support channels]
+
+## ⚠️ Disclaimer
+[OSPO disclaimer]
+
+---
+
+[Optional footer]
+```
+
+---
+
+**End of Template**
+
+Use this template as a guide when creating or updating README.md files for Salesforce Accelerators. Ensure all mandatory sections are included and all placeholders are replaced with actual project-specific content.
