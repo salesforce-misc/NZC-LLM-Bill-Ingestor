@@ -148,7 +148,7 @@ export default class EnergyRecordDetail extends LightningElement {
 
     // Try to find a meaningful title from common fields
     const titleFields = ["account_number", "account", "name", "title"];
-    for (let field of titleFields) {
+    for (const field of titleFields) {
       if (this.recordData[field]) {
         return `Details for ${this.recordData[field]}`;
       }

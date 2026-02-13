@@ -1,6 +1,11 @@
 /* Card and layout - SLDS 2 hooks */
+:host {
+  --c-ai-width-full: 100%;
+  --c-ai-result-key-width: 65%;
+}
+
 .ai-glass-card {
-  width: 100%;
+  width: var(--c-ai-width-full);
   margin: var(--slds-g-spacing-7, 2.5rem) 0 0 0;
   background: var(--slds-g-color-surface-container-1, #ffffff);
   border-radius: var(--slds-g-radius-border-4, 1.25rem);
@@ -58,7 +63,7 @@
 }
 
 .ai-title {
-  font-size: 1.35rem;
+  font-size: var(--slds-g-font-scale-4, 1.25rem);
   font-weight: var(--slds-g-font-weight-7, 700);
   color: var(--slds-g-color-palette-green-50);
   letter-spacing: 0.01em;
@@ -93,7 +98,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
+  width: var(--c-ai-width-full);
 }
 
 .ai-uploaded-file {
@@ -123,7 +128,7 @@
 
 /* Analyze button - use SLDS 2 success semantic for green theme */
 .ai-analyze-btn {
-  min-width: 200px;
+  min-width: var(--slds-g-sizing-14, 15rem);
   font-size: var(--slds-g-font-size-base, 1rem);
   font-weight: var(--slds-g-font-weight-6, 600);
   border-radius: var(--slds-g-radius-border-2, 0.5rem);
@@ -201,7 +206,7 @@
 
 /* Table styling - component-specific classes */
 .ai-table {
-  width: 100%;
+  width: var(--c-ai-width-full);
   border-collapse: collapse;
   border: var(--slds-g-sizing-border-1, 1px) solid
     var(--slds-g-color-border-1, #e5e5e5);
@@ -209,7 +214,7 @@
 }
 
 .ai-result-table {
-  width: 100%;
+  width: var(--c-ai-width-full);
   background-color: transparent;
   border: var(--slds-g-sizing-border-1, 1px) solid
     var(--slds-g-color-border-1, #e5e5e5);
@@ -226,7 +231,7 @@
 .ai-result-key {
   font-weight: var(--slds-g-font-weight-6, 600);
   color: var(--slds-g-color-palette-green-50);
-  width: 65%;
+  width: var(--c-ai-result-key-width);
   overflow-wrap: break-word;
   word-break: break-all;
   vertical-align: top;
@@ -257,7 +262,7 @@
 }
 
 .ai-action-btn {
-  min-width: 120px;
+  min-width: var(--slds-g-sizing-13, 10rem);
 }
 
 .ai-action-cell {
@@ -323,28 +328,28 @@
   align-items: center;
   gap: var(--slds-g-spacing-2, 0.5rem);
   margin-bottom: var(--slds-g-spacing-4, 1rem);
-  font-size: 1.1rem;
+  font-size: var(--slds-g-font-scale-3, 1.125rem);
   font-weight: var(--slds-g-font-weight-6, 600);
   color: var(--slds-g-color-accent-1, #0176d3);
 }
 
 .ai-result-single {
-  width: 100%;
+  width: var(--c-ai-width-full);
   margin-bottom: var(--slds-g-spacing-4, 1rem);
 }
 
 .ai-result-array {
-  width: 100%;
+  width: var(--c-ai-width-full);
   margin-bottom: var(--slds-g-spacing-4, 1rem);
 }
 
 .ai-result-datatable {
-  width: 100%;
+  width: var(--c-ai-width-full);
   margin-top: var(--slds-g-spacing-4, 1rem);
 }
 
 .ai-result-datatable lightning-datatable {
-  width: 100%;
+  width: var(--c-ai-width-full);
   border: var(--slds-g-sizing-border-1, 1px) solid
     var(--slds-g-color-border-1, #e5e5e5);
   border-radius: var(--slds-g-radius-border-1, 0.125rem);
@@ -353,7 +358,7 @@
 .ai-result-table th,
 .ai-result-table td {
   word-wrap: break-word;
-  max-width: 200px;
+  max-width: var(--slds-g-sizing-14, 15rem);
 }
 
 .ai-table-hint {

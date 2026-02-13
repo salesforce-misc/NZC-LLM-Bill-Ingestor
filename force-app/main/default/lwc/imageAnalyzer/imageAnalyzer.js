@@ -110,7 +110,7 @@ export default class AIFileAnalysisController extends NavigationMixin(
         });
 
         // Generate essential columns only - Account Number, Due Date, Kilowatts Consumed
-        let columns = [
+        const columns = [
           {
             label: "#",
             fieldName: "rowIndex",
@@ -458,7 +458,7 @@ export default class AIFileAnalysisController extends NavigationMixin(
     }
     // Pass the raw result to the flow
     const encodedResult = encodeURIComponent(this.aiResult);
-    let flowUrl = `/flow/${this.flowApiName}?input_AIAnalysisResult=${encodedResult}&recordId=${this.recordId}`;
+    const flowUrl = `/flow/${this.flowApiName}?input_AIAnalysisResult=${encodedResult}&recordId=${this.recordId}`;
     window.open(flowUrl, "_blank");
   }
 
@@ -525,7 +525,6 @@ export default class AIFileAnalysisController extends NavigationMixin(
   showSimpleActionToast(msg) {
     this.actionToastMessage = msg;
     this.showActionToast = true;
-    // eslint-disable-next-line @lwc/lwc/no-async-operation
     setTimeout(() => {
       this.showActionToast = false;
     }, 1500);

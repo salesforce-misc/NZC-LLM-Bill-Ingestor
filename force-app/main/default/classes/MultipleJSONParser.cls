@@ -1,43 +1,23 @@
-/*
- * @author: Munawir
- * @authorEmail: munawirrahman@gmail.com
- * @authorMedium: https://medium.com/@munawirrahman
- * @Description: 
-         Parse JSON Data on Flow Builder
- * @Inputs:
-         * @InputParam: (Mandatory) JSON String to Parse ==> Text Variable or Text Template in JSON Format
-        * @InputParam: (Mandatory) Ignore Error? ==> Boolean whether you want the flow to fail if parsing fail or not
-                                            			[Error] :  <error.text> if failed and Set to True
-        * @InputParam: Field<number> ==> specify where you want to get the value from
-             @example: JSON = {"id": "0001",
-                              "type": "donut",
-                              "ingredients":[
-                               {"id": "1003",
-                                "type": "Blueberry"},
-                                {"id": "1004",
-                                "type": "Dough"}]}
-            (Field01) id ==> 0001
-            (Field02) type ==> donut
-            (Field03) ingredients.[1]id ==> 1004
-            (Field04) ingredients.[1]type ==> Dough
-            (Field05) ingredients ==> [{"type":"Blueberry","id":"1003"},{"type":"Dough","id":"1004"}]
-            (Field06) Ingredients.[0] ==> {"type":"Blueberry","id":"1003"}
- * @Outputs:
-        * @OutputParam: Value<number> ==> Text Variable of your specified Field
- * @Limitations: 
-         * only supports 20 Fields in one Apex Action Element, feel free to alter the numbers if you need to :)
-        * return variable as text, dont forget to convert the text to other data type in flow if you need to :)
-*/
+/**
+ * Invocable Flow action to parse JSON and extract up to 20 field values.
+ * Field paths use dot notation (e.g. ingredients.[1]id). Names are fixed for Flow API compatibility.
+ * @author Munawir (munawirrahman@gmail.com)
+ */
 public class MultipleJSONParser {
-    
+
+    /**
+     * Invocable entry point: parses JSON for each Request and returns ResultValue list.
+     * @param jsonObjects List of Request (one per Flow record; each has jsonStringToParse, ignore_error, fieldName1-20)
+     * @return List of ResultValue with Value01-Value20 populated per field path
+     */
     @InvocableMethod(label='MultipleJSONParser' description='MultipleJSONParser')
     public static List<ResultValue> MultipleJSONParser(List<Request> jsonObjects) {
         List<ResultValue> results = new List<ResultValue>();
-        
+
         for (Request jsonObject: jsonObjects) {
             ResultValue result = new ResultValue();
             Object jsonToParse = JSON.deserializeUntyped(jsonObject.jsonStringToParse);
-            
+
             result.Value01 = JSONParser(jsonObject.fieldName1, jsonToParse, jsonObject.ignore_error);
             result.Value02 = JSONParser(jsonObject.fieldName2, jsonToParse, jsonObject.ignore_error);
             result.Value03 = JSONParser(jsonObject.fieldName3, jsonToParse, jsonObject.ignore_error);
@@ -58,13 +38,20 @@ public class MultipleJSONParser {
             result.Value18 = JSONParser(jsonObject.fieldName18, jsonToParse, jsonObject.ignore_error);
             result.Value19 = JSONParser(jsonObject.fieldName19, jsonToParse, jsonObject.ignore_error);
             result.Value20 = JSONParser(jsonObject.fieldName20, jsonToParse, jsonObject.ignore_error);
-            
+
             results.add(result);
         }
-        
+
         return results;
     }
-    
+
+    /**
+     * Parses a single field path from JSON. Returns error string if ignore_error and parsing fails.
+     * @param fieldName Path (e.g. id, ingredients.[1]type)
+     * @param jsonToParse Deserialized JSON root
+     * @param ignore_error If true, return error string on failure; else throw
+     * @return Extracted string value or null
+     */
     private static String JSONParser(String fieldName, Object jsonToParse, Boolean ignore_error) {
         String result;
         if (fieldName != null) {
@@ -82,62 +69,79 @@ public class MultipleJSONParser {
         }
         return result;
     }
-    
+
+    /**
+     * Dispatches to list or map parser based on jsonObject type.
+     * @param fieldName Remaining path to traverse
+     * @param jsonObject Current node (Map, List, or primitive)
+     * @return String value at path
+     */
     private static String mapParser(String fieldName, Object jsonObject) {
         if (String.isBlank(fieldName)) {
             return getStringValue(jsonObject);
         }
-        
+
         if (jsonObject instanceof List<Object>) {
             return parseListObject(fieldName, (List<Object>)jsonObject);
         }
-        
+
         if (jsonObject instanceof Map<String, Object>) {
             return parseMapObject(fieldName, (Map<String, Object>)jsonObject);
         }
-        
+
         return getStringValue(jsonObject);
     }
-    
+
     /**
-     * Handles parsing of List objects
+     * Handles parsing of List objects; expects fieldName like [index]remaining.
+     * @param fieldName Path starting with [n]
+     * @param theList List to index into
+     * @return String value at path
      */
     private static String parseListObject(String fieldName, List<Object> theList) {
         Integer enclosureIndex = fieldName.indexOf(']');
         Integer listIndex = Integer.valueOf(fieldName.substring(1, enclosureIndex));
-        
+
         if (listIndex >= theList.size()) {
             throw new ListException('List index out of bounds: ' + listIndex);
         }
-        
+
         Object paramObject = theList.get(listIndex);
         String remainingFieldName = fieldName.substring(enclosureIndex + 1);
-        
+
         return mapParser(remainingFieldName, paramObject);
     }
-    
+
     /**
-     * Handles parsing of Map objects  
+     * Handles parsing of Map objects; traverses by key then remainder.
+     * @param fieldName Path (key or key.remainder or key[idx])
+     * @param theMap Map to get value from
+     * @return String value at path
      */
     private static String parseMapObject(String fieldName, Map<String, Object> theMap) {
         Integer dotIndex = fieldName.indexOf('.');
         Integer listIndex = fieldName.indexOf('[');
-        
+
         // Find the earliest delimiter
         Integer earliestIndex = Math.min(
             dotIndex < 0 ? fieldName.length() : dotIndex,
             listIndex < 0 ? fieldName.length() : listIndex
         );
-        
+
         String traversedFieldName = fieldName.substring(0, earliestIndex);
         Object paramObject = theMap.get(traversedFieldName);
-        
-        String remainingFieldName = (earliestIndex + 1 > fieldName.length()) ? 
+
+        String remainingFieldName = (earliestIndex + 1 > fieldName.length()) ?
             '' : fieldName.substring(earliestIndex + 1);
-            
+
         return mapParser(remainingFieldName, paramObject);
     }
-    
+
+    /**
+     * Converts JSON primitive to String.
+     * @param paramObject String, Integer, Boolean, Decimal, or Double
+     * @return String representation or null
+     */
     private static String getStringValue(Object paramObject) {
         String result = null;
         if (paramObject instanceof String) { result = (String)paramObject; }
@@ -151,9 +155,10 @@ public class MultipleJSONParser {
         }
         return result;
     }
-    
+
+    /** Invocable input: JSON string, ignore-error flag, and field paths 1-20. */
     public class Request {
-        @InvocableVariable(label='JSON String to Parse' required=True 
+        @InvocableVariable(label='JSON String to Parse' required=True
                            description='JSON String to Parse (can be Text Template formatted to JSON)')
         public String jsonStringToParse;
         @InvocableVariable(label='Ignore Error?' required=True
@@ -200,7 +205,8 @@ public class MultipleJSONParser {
         @InvocableVariable(label='Field20')
         public String fieldName20;
     }
-    
+
+    /** Invocable output: Value01-Value20 hold parsed field values. */
     public class ResultValue {
         @InvocableVariable(label='Value01')
         public String Value01;

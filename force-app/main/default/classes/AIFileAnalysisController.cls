@@ -1,5 +1,9 @@
+/**
+ * Controller for AI-powered bill analysis in Net Zero Cloud.
+ * Handles file retrieval, Einstein AI analysis, and creation of StnryAssetEnrgyUse records.
+ */
 public with sharing class AIFileAnalysisController {
-    
+
     /**
      * Wrapper class to format file data for the LWC's combobox component.
      */
@@ -9,12 +13,17 @@ public with sharing class AIFileAnalysisController {
         @AuraEnabled
         public String value {get; set;} // This will be the file's ID
 
+        /**
+         * Creates a FileOption for the combobox.
+         * @param label Display label (file name)
+         * @param value Value (file Id)
+         */
         public FileOption(String label, String value) {
             this.label = label;
             this.value = value;
         }
     }
-    
+
     /**
      * NEW: This method returns the base URL for the current Salesforce org.
      * This is used to construct an absolute URL for flow navigation, making it more reliable.
@@ -25,6 +34,11 @@ public with sharing class AIFileAnalysisController {
         return URL.getOrgDomainUrl().toExternalForm();
     }
 
+    /**
+     * Retrieves files linked to a record for the combobox.
+     * @param recordId Id of the linked entity (e.g. asset)
+     * @return List of FileOption with label (title) and value (Id)
+     */
     @AuraEnabled(cacheable=true)
     public static List<FileOption> getRelatedFiles(String recordId) {
         List<FileOption> options = new List<FileOption>();
@@ -36,8 +50,8 @@ public with sharing class AIFileAnalysisController {
         }
 
         for (ContentDocumentLink cdl : [
-            SELECT ContentDocumentId 
-            FROM ContentDocumentLink 
+            SELECT ContentDocumentId
+            FROM ContentDocumentLink
             WHERE LinkedEntityId = :recordId
         ]) {
             contentDocumentIds.add(cdl.ContentDocumentId);
@@ -48,10 +62,10 @@ public with sharing class AIFileAnalysisController {
             if (!Schema.sObjectType.ContentDocument.isAccessible()) {
                 throw new AuraHandledException('Access denied to ContentDocument');
             }
-            
+
             for (ContentDocument cd : [
-                SELECT Id, Title 
-                FROM ContentDocument 
+                SELECT Id, Title
+                FROM ContentDocument
                 WHERE Id IN :contentDocumentIds
                 ORDER BY Title ASC
             ]) {
@@ -61,6 +75,11 @@ public with sharing class AIFileAnalysisController {
         return options;
     }
 
+    /**
+     * Invokes Einstein AI to analyze a file via the Analyze_Files prompt template.
+     * @param fileId ContentDocument Id to analyze
+     * @return Analysis result text or error message
+     */
     @AuraEnabled(cacheable=false)
     public static String analyzeFiles(String fileId) {
         try {
@@ -77,13 +96,13 @@ public with sharing class AIFileAnalysisController {
             inputValues.put('Input:Analyze_Files', cWrapped);
 
             promptInput.inputParams = inputValues;
-            
+
             promptInput.additionalConfig = new ConnectApi.EinsteinLlmAdditionalConfigInput();
             promptInput.additionalConfig.applicationName = 'PromptTemplateGenerationsInvocable';
 
-            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation result = 
+            ConnectApi.EinsteinPromptTemplateGenerationsRepresentation result =
                 ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('Analyze_Files', promptInput);
-            
+
             return result.generations[0].text;
 
         } catch (Exception e) {
@@ -103,32 +122,37 @@ public with sharing class AIFileAnalysisController {
         if (!Schema.sObjectType.StnryAssetEnrgyUse.isCreateable()) {
             throw new AuraHandledException('Access denied to create StnryAssetEnrgyUse records');
         }
-        
+
         try {
             String cleanedJson = cleanJsonData(jsonData);
             Object parsedJson = JSON.deserializeUntyped(cleanedJson);
             List<StnryAssetEnrgyUse> recordsToInsert = processJsonData(parsedJson, recordId);
-            
+
             return insertEnergyUseRecords(recordsToInsert);
-            
+
         } catch (Exception e) {
             throw new AuraHandledException('Error creating energy use records: ' + e.getMessage());
         }
     }
-    
+
     /**
-     * Helper method to clean JSON data
+     * Removes markdown code fences from JSON string.
+     * @param jsonData Raw JSON string (may include ```json fences)
+     * @return Cleaned JSON string
      */
     private static String cleanJsonData(String jsonData) {
         return jsonData.replace('```json\n', '').replace('\n```', '').trim();
     }
-    
+
     /**
-     * Helper method to process JSON data and return list of records
+     * Processes parsed JSON into StnryAssetEnrgyUse records.
+     * @param parsedJson Deserialized JSON (List or Map)
+     * @param recordId StnryAssetEnvrSrcId to associate
+     * @return List of records to insert
      */
     private static List<StnryAssetEnrgyUse> processJsonData(Object parsedJson, String recordId) {
         List<StnryAssetEnrgyUse> recordsToInsert = new List<StnryAssetEnrgyUse>();
-        
+
         if (parsedJson instanceof List<Object>) {
             recordsToInsert = processMultipleSites((List<Object>) parsedJson, recordId);
         } else if (parsedJson instanceof Map<String, Object>) {
@@ -137,16 +161,19 @@ public with sharing class AIFileAnalysisController {
                 recordsToInsert.add(newRecord);
             }
         }
-        
+
         return recordsToInsert;
     }
-    
+
     /**
-     * Helper method to process multiple sites
+     * Processes a list of site objects into energy use records.
+     * @param sites List of site Maps from JSON
+     * @param recordId StnryAssetEnvrSrcId to associate
+     * @return List of StnryAssetEnrgyUse records
      */
     private static List<StnryAssetEnrgyUse> processMultipleSites(List<Object> sites, String recordId) {
         List<StnryAssetEnrgyUse> records = new List<StnryAssetEnrgyUse>();
-        
+
         for (Object siteObj : sites) {
             if (siteObj instanceof Map<String, Object>) {
                 Map<String, Object> site = (Map<String, Object>) siteObj;
@@ -156,16 +183,18 @@ public with sharing class AIFileAnalysisController {
                 }
             }
         }
-        
+
         return records;
     }
-    
+
     /**
-     * Helper method to insert records and return IDs
+     * Inserts energy use records and returns created Ids.
+     * @param recordsToInsert List of StnryAssetEnrgyUse to insert
+     * @return List of created record Ids
      */
     private static List<String> insertEnergyUseRecords(List<StnryAssetEnrgyUse> recordsToInsert) {
         List<String> createdRecordIds = new List<String>();
-        
+
         if (!recordsToInsert.isEmpty()) {
             // Check FLS permissions for INSERT operation on all fields being set
             if (!Schema.sObjectType.StnryAssetEnrgyUse.fields.FuelConsumption.isCreateable() ||
@@ -175,16 +204,16 @@ public with sharing class AIFileAnalysisController {
                 !Schema.sObjectType.StnryAssetEnrgyUse.fields.StnryAssetEnvrSrcId.isCreateable()) {
                 throw new AuraHandledException('Insufficient permissions to create StnryAssetEnrgyUse records with required fields');
             }
-            
+
             insert recordsToInsert;
             for (StnryAssetEnrgyUse record : recordsToInsert) {
                 createdRecordIds.add(record.Id);
             }
         }
-        
+
         return createdRecordIds;
     }
-    
+
     /**
      * Helper method to create a single StnryAssetEnrgyUse record from site data
      * @param site Map containing the site data
@@ -195,24 +224,24 @@ public with sharing class AIFileAnalysisController {
         try {
             SiteData siteData = extractSiteData(site);
             StnryAssetEnrgyUse energyUseRecord = new StnryAssetEnrgyUse();
-            
+
             // Set required fields
             if (String.isNotBlank(siteData.kilowatts)) {
                 energyUseRecord.FuelConsumption = Decimal.valueOf(siteData.kilowatts);
             }
-            
+
             energyUseRecord.FuelType = 'Electricity';
             energyUseRecord.StnryAssetEnvrSrcId = recordId;
             energyUseRecord.Name = buildRecordName(siteData.account, siteData.dueDate);
             energyUseRecord.StartDate = parseDueDateString(siteData.dueDate);
-            
+
             return energyUseRecord;
-            
+
         } catch (Exception e) {
             return null;
         }
     }
-    
+
     /**
      * Helper class to hold extracted site data
      */
@@ -221,34 +250,37 @@ public with sharing class AIFileAnalysisController {
         String chargeAmount;
         String dueDate;
         String account;
-        
+
         SiteData() {
             // Default constructor for builder pattern
+            return;
         }
-        
+
         SiteData withKilowatts(String kilowatts) {
             this.kilowatts = kilowatts;
             return this;
         }
-        
+
         SiteData withChargeAmount(String chargeAmount) {
             this.chargeAmount = chargeAmount;
             return this;
         }
-        
+
         SiteData withDueDate(String dueDate) {
             this.dueDate = dueDate;
             return this;
         }
-        
+
         SiteData withAccount(String account) {
             this.account = account;
             return this;
         }
     }
-    
+
     /**
-     * Extracts site data from JSON map
+     * Extracts site data from a JSON map into SiteData.
+     * @param site Map of parsed JSON key-value pairs
+     * @return SiteData populated from map
      */
     private static SiteData extractSiteData(Map<String, Object> site) {
         return new SiteData()
@@ -257,9 +289,12 @@ public with sharing class AIFileAnalysisController {
             .withDueDate(getStringValue(site.get('due_date')))
             .withAccount(getStringValue(site.get('account')));
     }
-    
+
     /**
-     * Builds record name from account and due date
+     * Builds a record Name from account and due date.
+     * @param account Account name
+     * @param dueDate Due date string
+     * @return Concatenated name or null if both blank
      */
     private static String buildRecordName(String account, String dueDate) {
         String recordName = '';
@@ -271,36 +306,39 @@ public with sharing class AIFileAnalysisController {
         }
         return String.isNotBlank(recordName) ? recordName : null;
     }
-    
+
     /**
-     * Parses due date string with multiple format support
-     * Supports: MM/DD/YYYY, MM/DD/YY, MM-DD-YYYY, MM-DD-YY
+     * Parses due date string (MM/DD/YYYY, MM/DD/YY, MM-DD-YYYY, MM-DD-YY).
+     * @param dueDate Date string to parse
+     * @return Parsed Date or null/today fallback
      */
     private static Date parseDueDateString(String dueDate) {
         if (String.isBlank(dueDate)) {
             return null;
         }
-        
+
         try {
             List<String> dateParts = splitDateString(dueDate.trim());
             if (dateParts.size() != 3) {
                 return Date.today(); // Fallback for invalid format
             }
-            
+
             Integer month = Integer.valueOf(dateParts[0].trim());
             Integer day = Integer.valueOf(dateParts[1].trim());
             Integer year = normalizeYear(Integer.valueOf(dateParts[2].trim()));
-            
-            return isValidDate(month, day, year) ? 
+
+            return isValidDate(month, day, year) ?
                 Date.newInstance(year, month, day) : Date.today();
-                
+
         } catch (Exception dateEx) {
             return Date.today(); // Fallback to today's date
         }
     }
-    
+
     /**
-     * Splits date string by common delimiters
+     * Splits date string by / or - delimiters.
+     * @param dateStr Date string (e.g. MM/DD/YYYY)
+     * @return List of [month, day, year] or empty list
      */
     private static List<String> splitDateString(String dateStr) {
         if (dateStr.contains('/')) {
@@ -310,9 +348,11 @@ public with sharing class AIFileAnalysisController {
         }
         return new List<String>();
     }
-    
+
     /**
-     * Converts 2-digit years to 4-digit years
+     * Converts 2-digit year to 4-digit (00-30 -> 2000-2030, 31-99 -> 1931-1999).
+     * @param year 2 or 4 digit year
+     * @return 4-digit year
      */
     private static Integer normalizeYear(Integer year) {
         if (year < 100) {
@@ -321,16 +361,20 @@ public with sharing class AIFileAnalysisController {
         }
         return year;
     }
-    
+
     /**
-     * Validates date components
+     * Validates month/day/year are in valid ranges.
+     * @param month Month 1-12
+     * @param day Day 1-31
+     * @param year Year 1900-2100
+     * @return true if valid
      */
     private static Boolean isValidDate(Integer month, Integer day, Integer year) {
-        return month >= 1 && month <= 12 && 
-               day >= 1 && day <= 31 && 
+        return month >= 1 && month <= 12 &&
+               day >= 1 && day <= 31 &&
                year >= 1900 && year <= 2100;
     }
-    
+
     /**
      * Helper method to safely get string value from an object
      * @param obj The object to convert to string

@@ -24,6 +24,12 @@ module.exports = [
     }
   },
   {
+    files: ["**/imageAnalyzer/imageAnalyzer.js"],
+    rules: {
+      "@lwc/lwc/no-async-operation": "off"
+    }
+  },
+  {
     rules: {
       // Custom rules - only include rules that exist in the current plugin version
       "@lwc/lwc/no-api-reassignments": "error",

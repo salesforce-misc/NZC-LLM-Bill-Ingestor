@@ -1,0 +1,6 @@
+# Salesforce Code Analyzer configuration
+# https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/configure.html
+
+engines:
+  flow:
+    disable_engine: true
