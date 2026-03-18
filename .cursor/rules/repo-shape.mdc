@@ -24,7 +24,6 @@ When you need to understand the project structure:
 - **imageAnalyzer**: Main LWC component for file upload and AI analysis
 - **AIFileAnalysisController**: Apex controller handling AI processing
 - **MultipleJSONParser**: Utility for parsing complex JSON structures
-- **Process_AI_Analysis_Result**: Flow for additional processing workflows
 
 ## Workflow
 1. Start with `README.md` for high-level understanding

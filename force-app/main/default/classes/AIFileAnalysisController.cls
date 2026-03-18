@@ -25,16 +25,6 @@ public with sharing class AIFileAnalysisController {
     }
 
     /**
-     * NEW: This method returns the base URL for the current Salesforce org.
-     * This is used to construct an absolute URL for flow navigation, making it more reliable.
-     * @return String representing the org's base URL (e.g., https://yourdomain.lightning.force.com)
-     */
-    @AuraEnabled(cacheable=true)
-    public static String getOrgBaseUrl() {
-        return URL.getOrgDomainUrl().toExternalForm();
-    }
-
-    /**
      * Retrieves files linked to a record for the combobox.
      * @param recordId Id of the linked entity (e.g. asset)
      * @return List of FileOption with label (title) and value (Id)

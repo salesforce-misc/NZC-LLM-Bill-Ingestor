@@ -170,7 +170,7 @@ private class SiteData {
 **Files:**
 
 - `force-app/main/default/classes/MultipleJSONParser.cls`
-- `force-app/main/default/flows/Process_AI_Analysis_Result.flow-meta.xml`
+- `force-app/main/default/flows/Process_AI_Analysis_Result.flow-meta.xml` _(Note: This flow was removed in a later update; record creation now occurs directly via the LWC and AIFileAnalysisController.)_
 
 **Issue:** Table columns showed generic headers ("A", "D", "k") instead of meaningful names.
 

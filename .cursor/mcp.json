@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "Salesforce LWC": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@salesforce/mcp@latest",
+        "--orgs",
+        "DEFAULT_TARGET_ORG",
+        "--toolsets",
+        "orgs,metadata,lwc-experts,data,testing",
+        "--allow-non-ga-tools"
+      ]
+    },
+    "ADK Experts LWC": {
+      "command": "node",
+      "args": [
+        "/Users/carlosvillalpando/Library/Mobile Documents/com~apple~CloudDocs/Documents/Github/NZC-GUS/adk-experts-lwc-source/dist/src/mcp/stdio.js"
+      ]
+    }
+  }
+}

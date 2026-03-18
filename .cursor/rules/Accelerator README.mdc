@@ -391,8 +391,7 @@ After deploying with any method above, complete these manual steps:
 2. **Edit** the page using the Lightning App Builder
 3. **Find** the `Image Analyzer` component in the Custom Components section
 4. **Drag** the component to your desired location
-5. **Configure** component properties as needed (flow name: Process_AI_Analysis_Result)
-6. **Save** and **Activate** the page
+5. **Save** and **Activate** the page
 ```
 
 ---
@@ -435,7 +434,6 @@ This accelerator contains the following metadata:
 
 - **2 Lightning Web Components** (`imageAnalyzer`, `energyRecordDetail`)
 - **2 Apex Classes** (`AIFileAnalysisController`, `MultipleJSONParser`)
-- **1 Flow** (`Process_AI_Analysis_Result`)
 - **1 Einstein AI Prompt Template** (`Analyze_Files`)
 
 ### Architecture Diagram

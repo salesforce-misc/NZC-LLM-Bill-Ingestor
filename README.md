@@ -32,7 +32,6 @@
 
 - **Net Zero Cloud Compatible**: Seamlessly integrates with Salesforce Net Zero Cloud for sustainability tracking
 - **Lightning Web Components**: Modern, responsive UI built with Lightning Web Components
-- **Flow Integration**: Includes pre-built flows for automated record processing
 - **Energy Use Record Creation**: Automatically creates `StnryAssetEnrgyUse` records from analyzed data
 
 ### 📊 **Energy Management**
@@ -147,8 +146,7 @@ After deploying with any method above, complete these manual steps:
 2. **Edit** the page using the Lightning App Builder
 3. **Find** the `Image Analyzer` component in the Custom Components section
 4. **Drag** the component to your desired location
-5. **Configure** component properties as needed (flow name: Process_AI_Analysis_Result)
-6. **Save** and **Activate** the page
+5. **Save** and **Activate** the page
 
 ### 🔄 **Processing Bills**
 
@@ -172,7 +170,6 @@ This accelerator contains the following metadata:
 
 - **2 Lightning Web Components** (`imageAnalyzer`, `energyRecordDetail`)
 - **2 Apex Classes** (`AIFileAnalysisController`, `MultipleJSONParser`)
-- **1 Flow** (`Process_AI_Analysis_Result`)
 - **1 Einstein AI Prompt Template** (`Analyze_Files`)
 
 ### Architecture Diagram
@@ -196,7 +193,6 @@ graph TB
 | `imageAnalyzer`              | Lightning Web Component for file upload and AI analysis    |
 | `AIFileAnalysisController`   | Apex controller handling AI processing and record creation |
 | `MultipleJSONParser`         | Utility class for parsing complex JSON structures          |
-| `Process_AI_Analysis_Result` | Flow for additional processing workflows                   |
 
 ---
 

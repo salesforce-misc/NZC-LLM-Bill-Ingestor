@@ -6,10 +6,6 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <members>Process_AI_Analysis_Result</members>
-        <name>Flow</name>
-    </types>
-    <types>
         <members>Analyze_Files</members>
         <name>GenAiPromptTemplate</name>
     </types>

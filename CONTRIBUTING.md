@@ -11,6 +11,10 @@ Thank you for your interest in contributing to the NZC LLM Bill Ingestor project
    ```bash
    git clone https://github.com/YOUR-USERNAME/NZC-LLM-Bill-Ingestor.git
    ```
+3. _(Optional for maintainers)_ Add the canonical repository as upstream:
+   ```bash
+   git remote add upstream https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor.git
+   ```
 
 ### 2. Set Up Development Environment
 

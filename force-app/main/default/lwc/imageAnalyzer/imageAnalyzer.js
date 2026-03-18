@@ -2,7 +2,6 @@ import { LightningElement, api, track, wire } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import analyzeFiles from "@salesforce/apex/AIFileAnalysisController.analyzeFiles";
 import getRelatedFiles from "@salesforce/apex/AIFileAnalysisController.getRelatedFiles";
-import getOrgBaseUrl from "@salesforce/apex/AIFileAnalysisController.getOrgBaseUrl";
 import createEnergyUseRecords from "@salesforce/apex/AIFileAnalysisController.createEnergyUseRecords";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
@@ -10,7 +9,6 @@ export default class AIFileAnalysisController extends NavigationMixin(
   LightningElement
 ) {
   @api recordId;
-  @api flowApiName = "Process_AI_Analysis_Result";
 
   @track uploadedFileId;
   @track uploadedFileName;
@@ -25,7 +23,6 @@ export default class AIFileAnalysisController extends NavigationMixin(
   @track actionToastMessage = "";
 
   @track fileOptions = [];
-  @track orgBaseUrl;
   @track createdRecordIds = [];
   @track selectedRowData = null;
   @track showDetailView = false;
@@ -293,15 +290,6 @@ export default class AIFileAnalysisController extends NavigationMixin(
     return this.isArrayResult && this.resultData ? this.resultData.length : 0;
   }
 
-  @wire(getOrgBaseUrl)
-  wiredOrgUrl({ error, data }) {
-    if (data) {
-      this.orgBaseUrl = data;
-    } else if (error) {
-      this.showToastMessage("Error", "Could not determine org URL.", "error");
-    }
-  }
-
   @wire(getRelatedFiles, { recordId: "$recordId" })
   wiredFiles(result) {
     this._wiredFilesResult = result;
@@ -445,21 +433,6 @@ export default class AIFileAnalysisController extends NavigationMixin(
     } finally {
       this.isCreatingRecords = false;
     }
-  }
-
-  handleStartFlow() {
-    if (!this.flowApiName) {
-      this.showToastMessage(
-        "Configuration Error",
-        "Flow API Name is not available.",
-        "error"
-      );
-      return;
-    }
-    // Pass the raw result to the flow
-    const encodedResult = encodeURIComponent(this.aiResult);
-    const flowUrl = `/flow/${this.flowApiName}?input_AIAnalysisResult=${encodedResult}&recordId=${this.recordId}`;
-    window.open(flowUrl, "_blank");
   }
 
   handleSort(event) {
