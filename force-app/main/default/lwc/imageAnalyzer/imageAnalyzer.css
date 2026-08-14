@@ -9,7 +9,7 @@
   margin: var(--slds-g-spacing-7, 2.5rem) 0 0 0;
   background: var(--slds-g-color-surface-container-1, #ffffff);
   border-radius: var(--slds-g-radius-border-4, 1.25rem);
-  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001A);
+  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001a);
   padding: var(--slds-g-spacing-6, 2rem);
   border: var(--slds-g-sizing-border-2, 2px) solid
     var(--slds-g-color-success-base-95);
@@ -69,7 +69,6 @@
   letter-spacing: 0.01em;
 }
 
-
 .ai-p-around {
   padding: var(--slds-g-spacing-4, 1rem);
 }
@@ -124,6 +123,14 @@
 .ai-analyze-btn-wrapper {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: var(--c-ai-width-full);
+}
+
+.ai-analyze-btn-wrapper .ai-analyze-btn {
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
 }
 
 /* Analyze button - use SLDS 2 success semantic for green theme */
@@ -132,20 +139,20 @@
   font-size: var(--slds-g-font-size-base, 1rem);
   font-weight: var(--slds-g-font-weight-6, 600);
   border-radius: var(--slds-g-radius-border-2, 0.5rem);
-  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001A);
+  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001a);
   --slds-c-button-brand-color-background: var(--slds-g-color-palette-green-60);
   --slds-c-button-brand-color-background-hover: var(
     --slds-g-color-palette-green-50
   );
   --slds-c-button-brand-color-border: var(--slds-g-color-palette-green-60);
-  --slds-c-button-brand-color-border-hover: var(--slds-g-color-palette-green-50);
+  --slds-c-button-brand-color-border-hover: var(
+    --slds-g-color-palette-green-50
+  );
   --slds-c-button-brand-text-color: var(--slds-g-color-on-accent-1, #ffffff);
 }
 
 .ai-analyze-btn lightning-primitive-icon {
-  --slds-c-icon-color-foreground-default: var(
-    --slds-g-color-palette-green-50
-  );
+  --slds-c-icon-color-foreground-default: var(--slds-g-color-palette-green-50);
 }
 
 .ai-loading {
@@ -200,7 +207,7 @@
   line-height: var(--slds-g-font-lineheight-3, 1.5);
   padding: var(--slds-g-spacing-4, 1rem);
   margin-top: var(--slds-g-spacing-4, 1rem);
-  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001A);
+  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001a);
   overflow: hidden;
 }
 
@@ -245,6 +252,10 @@
   padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
 }
 
+.ai-result-value lightning-input {
+  width: var(--c-ai-width-full);
+}
+
 .ai-result-raw {
   display: flex;
   align-items: flex-start;
@@ -278,7 +289,7 @@
   display: inline-block;
   font-weight: var(--slds-g-font-weight-5, 500);
   font-size: var(--slds-g-font-size-base, 1rem);
-  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001A);
+  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001a);
   animation: fadeInOut 1.5s linear;
 }
 @keyframes fadeInOut {
@@ -320,7 +331,7 @@
   font-size: var(--slds-g-font-size-base, 1rem);
   border: var(--slds-g-sizing-border-1, 1px) solid
     var(--slds-g-color-success-base-95);
-  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001A);
+  box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001a);
 }
 
 .ai-result-title {
@@ -377,6 +388,6 @@
 @media (max-width: 768px) {
   .ai-result-datatable {
     margin-top: var(--slds-g-spacing-3, 0.75rem);
-    box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001A);
+    box-shadow: var(--slds-g-shadow-1, 0px 2px 2px 0px #0000001a);
   }
 }

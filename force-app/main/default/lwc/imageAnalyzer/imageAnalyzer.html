@@ -110,12 +110,26 @@
               ></lightning-icon>
               Analysis Result
             </h3>
+            <p class="ai-table-hint">
+              Review and correct extracted values before creating records.
+            </p>
             <table class="ai-result-table ai-table">
               <tbody>
                 <template for:each={resultData} for:item="item">
                   <tr key={item.id}>
                     <th scope="row" class="ai-result-key">{item.label}</th>
-                    <td class="ai-result-value">{item.value}</td>
+                    <td class="ai-result-value">
+                      <lightning-input
+                        data-field-key={item.id}
+                        name={item.id}
+                        label={item.label}
+                        variant="label-hidden"
+                        type={item.inputType}
+                        value={item.editValue}
+                        step={item.step}
+                        onchange={handleSingleFieldChange}
+                      ></lightning-input>
+                    </td>
                   </tr>
                 </template>
               </tbody>
@@ -135,8 +149,8 @@
             </h3>
             <div class="ai-result-datatable">
               <p class="ai-table-hint">
-                💡 Click the blue action button (⋮) and select "View Details" to
-                see full record information
+                Click a cell to correct extracted values, then create records.
+                Use the action menu to view full details.
               </p>
               <lightning-datatable
                 data={resultData}
@@ -145,9 +159,12 @@
                 hide-checkbox-column="true"
                 show-row-number-column="false"
                 resize-column-disabled="true"
+                draft-values={draftValues}
                 sorted-direction={sortedDirection}
                 sorted-by={sortedBy}
                 onsort={handleSort}
+                onsave={handleSave}
+                oncellchange={handleCellChange}
                 class="ai-datatable"
                 onrowaction={handleRowAction}
               >

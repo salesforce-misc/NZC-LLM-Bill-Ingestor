@@ -9,6 +9,7 @@ export default class AIFileAnalysisController extends NavigationMixin(
   LightningElement
 ) {
   @api recordId;
+  @api flowApiName = "Process_AI_Analysis_Result";
 
   @track uploadedFileId;
   @track uploadedFileName;
@@ -29,7 +30,9 @@ export default class AIFileAnalysisController extends NavigationMixin(
   @track _formattedResult = null;
   @track sortedBy;
   @track sortedDirection = "asc";
+  @track draftValues = [];
   _lastAiResult = "";
+  _resetTimeoutId;
 
   _wiredFilesResult;
 
@@ -68,19 +71,10 @@ export default class AIFileAnalysisController extends NavigationMixin(
       ) {
         this._formattedResult = {
           type: "single",
-          data: Object.keys(parsed).map((key) => {
-            // Create a more readable label from the JSON key
-            const label = key
-              .replace(/_/g, " ")
-              .replace(/\b\w/g, (char) => char.toUpperCase());
-            const rawValue = parsed[key];
-            const value = this._formatDisplayValue(rawValue, key);
-            return {
-              id: key,
-              label: label,
-              value: value
-            };
-          })
+          rawObject: { ...parsed },
+          data: Object.keys(parsed).map((key) =>
+            this._toSingleField(key, parsed[key])
+          )
         };
         this._lastAiResult = this.aiResult;
         return this._formattedResult;
@@ -125,13 +119,15 @@ export default class AIFileAnalysisController extends NavigationMixin(
             label: "Account Number",
             type: "text",
             wrapText: true,
-            sortable: true
+            sortable: true,
+            editable: true
           },
           {
             key: "due_date",
             label: "Due Date",
             type: "date",
             sortable: true,
+            editable: true,
             typeAttributes: {
               year: "numeric",
               month: "short",
@@ -143,6 +139,18 @@ export default class AIFileAnalysisController extends NavigationMixin(
             label: "kWh Consumed",
             type: "number",
             sortable: true,
+            editable: true,
+            typeAttributes: {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }
+          },
+          {
+            key: "therms_consumed",
+            label: "Therms Consumed",
+            type: "number",
+            sortable: true,
+            editable: true,
             typeAttributes: {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
@@ -170,6 +178,10 @@ export default class AIFileAnalysisController extends NavigationMixin(
               // Add typeAttributes if specified
               if (field.typeAttributes) {
                 column.typeAttributes = field.typeAttributes;
+              }
+
+              if (field.editable) {
+                column.editable = true;
               }
 
               columns.push(column);
@@ -232,6 +244,18 @@ export default class AIFileAnalysisController extends NavigationMixin(
     "kilowatts_consumed",
     "charge_amount_electricity"
   ]);
+
+  static _NUMBER_INPUT_KEYS = new Set([
+    "amount_due",
+    "kilowatts_consumed",
+    "charge_amount_electricity",
+    "therms_consumed",
+    "charge_amount_gas"
+  ]);
+
+  static _DATE_INPUT_KEYS = new Set(["due_date", "statement_date"]);
+
+  static _PAYLOAD_META_KEYS = new Set(["Id", "rowIndex"]);
 
   /**
    * Format display value for analysis result table. Null/empty renders "-".
@@ -314,7 +338,27 @@ export default class AIFileAnalysisController extends NavigationMixin(
     return this.createdRecordIds.length !== 1 ? "s" : "";
   }
 
+  disconnectedCallback() {
+    this._clearResetTimeout();
+  }
+
+  _clearResetTimeout() {
+    if (this._resetTimeoutId) {
+      clearTimeout(this._resetTimeoutId);
+      this._resetTimeoutId = undefined;
+    }
+  }
+
+  _scheduleOriginalStateReset() {
+    this._clearResetTimeout();
+    this._resetTimeoutId = setTimeout(() => {
+      this._resetTimeoutId = undefined;
+      this.resetSelectionState();
+    }, 15000);
+  }
+
   resetSelectionState() {
+    this._clearResetTimeout();
     this.aiResult = "";
     this.errorMessage = "";
     this.uploadedFileId = null;
@@ -328,6 +372,9 @@ export default class AIFileAnalysisController extends NavigationMixin(
     this._lastAiResult = "";
     this.sortedBy = undefined;
     this.sortedDirection = "asc";
+    this.draftValues = [];
+    this.showActionToast = false;
+    this.actionToastMessage = "";
   }
 
   fileUploadHandler(event) {
@@ -400,23 +447,22 @@ export default class AIFileAnalysisController extends NavigationMixin(
     this.errorMessage = "";
 
     try {
-      const createdIds = await createEnergyUseRecords({
-        jsonData: this.aiResult,
-        recordId: this.recordId
-      });
+      if (this.isArrayResult && this.draftValues.length) {
+        this._applyDrafts(this.draftValues);
+      }
 
-      this.createdRecordIds = createdIds;
+      const createdRecords = this._normalizeCreatedRecords(
+        await createEnergyUseRecords({
+          jsonData: this._buildJsonForCreate(),
+          recordId: this.recordId
+        })
+      );
 
-      if (createdIds && createdIds.length > 0) {
-        const recordCount = createdIds.length;
-        const message =
-          recordCount === 1
-            ? `Successfully created 1 Energy Use record!`
-            : `Successfully created ${recordCount} Energy Use records!`;
-        this.showToastMessage("Success", message, "success");
-        this.showSimpleActionToast(
-          `${recordCount} record${recordCount !== 1 ? "s" : ""} created successfully!`
-        );
+      this.createdRecordIds = createdRecords.map((record) => record.id);
+
+      if (createdRecords.length > 0) {
+        this._showCreateSuccessToast(createdRecords);
+        this._scheduleOriginalStateReset();
       } else {
         this.showToastMessage(
           "No Records Created",
@@ -433,6 +479,216 @@ export default class AIFileAnalysisController extends NavigationMixin(
     } finally {
       this.isCreatingRecords = false;
     }
+  }
+
+  handleSave(event) {
+    this._applyDrafts(event.detail.draftValues);
+  }
+
+  handleCellChange(event) {
+    this.draftValues = event.detail.draftValues || [];
+  }
+
+  handleSingleFieldChange(event) {
+    const key = event.target.dataset.fieldKey;
+    if (
+      !key ||
+      !this._formattedResult ||
+      this._formattedResult.type !== "single"
+    ) {
+      return;
+    }
+
+    const field = this._formattedResult.data.find((item) => item.id === key);
+    const inputType = field ? field.inputType : "text";
+    const inputValue = event.target.value;
+    const storedValue = this._fromInputValue(inputValue, inputType);
+
+    this._formattedResult = {
+      ...this._formattedResult,
+      rawObject: {
+        ...this._formattedResult.rawObject,
+        [key]: storedValue
+      },
+      data: this._formattedResult.data.map((item) =>
+        item.id === key
+          ? {
+              ...item,
+              editValue: inputValue,
+              value: this._formatDisplayValue(storedValue, key)
+            }
+          : item
+      )
+    };
+  }
+
+  _toSingleField(key, rawValue) {
+    const label = key
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    const inputType = this._inputTypeForKey(key);
+    return {
+      id: key,
+      label: label,
+      value: this._formatDisplayValue(rawValue, key),
+      editValue: this._toInputValue(rawValue, inputType),
+      inputType: inputType,
+      step: inputType === "number" ? "0.01" : undefined
+    };
+  }
+
+  _inputTypeForKey(key) {
+    const normalized = String(key).toLowerCase();
+    if (this.constructor._NUMBER_INPUT_KEYS.has(normalized)) {
+      return "number";
+    }
+    if (this.constructor._DATE_INPUT_KEYS.has(normalized)) {
+      return "date";
+    }
+    return "text";
+  }
+
+  _toInputValue(rawValue, inputType) {
+    if (rawValue === null || rawValue === undefined || rawValue === "") {
+      return "";
+    }
+    if (inputType === "date") {
+      return this._toIsoDateString(rawValue);
+    }
+    return String(rawValue);
+  }
+
+  _fromInputValue(inputValue, inputType) {
+    if (inputValue === null || inputValue === undefined || inputValue === "") {
+      return "";
+    }
+    if (inputType === "date") {
+      return this._toApexDateString(inputValue);
+    }
+    if (inputType === "number") {
+      const parsed = Number(inputValue);
+      return Number.isFinite(parsed) ? parsed : inputValue;
+    }
+    return inputValue;
+  }
+
+  _toIsoDateString(value) {
+    const str = String(value).trim();
+    const iso = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (iso) {
+      return `${iso[1]}-${iso[2]}-${iso[3]}`;
+    }
+    const us = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
+    if (!us) {
+      return str;
+    }
+    const month = us[1].padStart(2, "0");
+    const day = us[2].padStart(2, "0");
+    let year = us[3];
+    if (year.length === 2) {
+      year = Number(year) <= 30 ? `20${year}` : `19${year}`;
+    }
+    return `${year}-${month}-${day}`;
+  }
+
+  _toApexDateString(value) {
+    if (value === null || value === undefined || value === "") {
+      return value;
+    }
+    const str = String(value).trim();
+    const iso = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (iso) {
+      return `${iso[2]}/${iso[3]}/${iso[1]}`;
+    }
+    return str;
+  }
+
+  _normalizeDraft(draft) {
+    const normalized = { ...draft };
+    if (Object.prototype.hasOwnProperty.call(normalized, "due_date")) {
+      normalized.due_date = this._toApexDateString(normalized.due_date);
+    }
+    return normalized;
+  }
+
+  _mergeDraftsIntoRows(rows, drafts) {
+    if (!rows || !drafts || drafts.length === 0) {
+      return rows;
+    }
+    const idToDraft = new Map(
+      drafts.map((draft) => [draft.Id, this._normalizeDraft(draft)])
+    );
+    return rows.map((row) => {
+      const draft = idToDraft.get(row.Id);
+      if (!draft) {
+        return row;
+      }
+      const changes = { ...draft };
+      delete changes.Id;
+      return { ...row, ...changes };
+    });
+  }
+
+  _applyDrafts(drafts) {
+    if (!this._formattedResult || this._formattedResult.type !== "array") {
+      this.draftValues = [];
+      return;
+    }
+    const merged = this._mergeDraftsIntoRows(
+      this._formattedResult.data,
+      drafts
+    );
+    this._formattedResult = {
+      ...this._formattedResult,
+      data: merged
+    };
+    this.draftValues = [];
+    if (this.selectedRowData) {
+      const updated = merged.find((row) => row.Id === this.selectedRowData.Id);
+      if (updated) {
+        this.selectedRowData = updated;
+      }
+    }
+  }
+
+  _rowsToPayload(rows) {
+    return rows.map((row) => {
+      const payload = {};
+      Object.keys(row).forEach((key) => {
+        if (!this.constructor._PAYLOAD_META_KEYS.has(key)) {
+          payload[key] =
+            key === "due_date" || key === "statement_date"
+              ? this._toApexDateString(row[key])
+              : row[key];
+        }
+      });
+      return payload;
+    });
+  }
+
+  _buildJsonForCreate() {
+    const formatted = this.formattedResult;
+    if (!formatted) {
+      return this.aiResult;
+    }
+    if (formatted.type === "array") {
+      const merged = this._mergeDraftsIntoRows(
+        formatted.data,
+        this.draftValues
+      );
+      return JSON.stringify(this._rowsToPayload(merged));
+    }
+    if (formatted.type === "single" && formatted.rawObject) {
+      const payload = { ...formatted.rawObject };
+      if (Object.prototype.hasOwnProperty.call(payload, "due_date")) {
+        payload.due_date = this._toApexDateString(payload.due_date);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "statement_date")) {
+        payload.statement_date = this._toApexDateString(payload.statement_date);
+      }
+      return JSON.stringify(payload);
+    }
+    return this.aiResult;
   }
 
   handleSort(event) {
@@ -503,12 +759,68 @@ export default class AIFileAnalysisController extends NavigationMixin(
     }, 1500);
   }
 
-  showToastMessage(title, message, variant) {
+  _normalizeCreatedRecords(created) {
+    if (!created || created.length === 0) {
+      return [];
+    }
+    return created.map((record) => {
+      if (typeof record === "string") {
+        return { id: record, fuelType: "Energy Use" };
+      }
+      return {
+        id: record.id,
+        fuelType: record.fuelType || "Energy Use"
+      };
+    });
+  }
+
+  _fuelTypeLabel(fuelType) {
+    if (fuelType === "NaturalGas") {
+      return "Natural Gas";
+    }
+    if (fuelType === "Electricity") {
+      return "Electricity";
+    }
+    return fuelType || "Energy Use";
+  }
+
+  _showCreateSuccessToast(createdRecords) {
+    const recordCount = createdRecords.length;
+    const placeholders = createdRecords
+      .map((_, index) => `{${index}}`)
+      .join(" ");
+    const message =
+      recordCount === 1
+        ? `Successfully created 1 Energy Use record! ${placeholders}`
+        : `Successfully created ${recordCount} Energy Use records! ${placeholders}`;
+
+    const messageData = createdRecords.map((record) => ({
+      url: `/${record.id}`,
+      label:
+        recordCount === 1
+          ? "View record"
+          : `View ${this._fuelTypeLabel(record.fuelType)} record`
+    }));
+
+    this.showToastMessage("Success", message, "success", {
+      messageData,
+      mode: "dismissable",
+      duration: 15000
+    });
+    this.showSimpleActionToast(
+      `${recordCount} record${recordCount !== 1 ? "s" : ""} created successfully!`
+    );
+  }
+
+  showToastMessage(title, message, variant, options = {}) {
     this.dispatchEvent(
       new ShowToastEvent({
         title: title,
         message: message,
-        variant: variant || "info"
+        variant: variant || "info",
+        messageData: options.messageData,
+        mode: options.mode,
+        duration: options.duration
       })
     );
   }

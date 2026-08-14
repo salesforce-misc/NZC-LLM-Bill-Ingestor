@@ -101,13 +101,30 @@ public with sharing class AIFileAnalysisController {
     }
 
     /**
+     * Created energy-use record returned to the LWC for toast links.
+     */
+    public class CreatedEnergyUse {
+        @AuraEnabled public String id { get; set; }
+        @AuraEnabled public String fuelType { get; set; }
+
+        /**
+         * @param id Created record Id
+         * @param fuelType FuelType picklist value
+         */
+        public CreatedEnergyUse(String id, String fuelType) {
+            this.id = id;
+            this.fuelType = fuelType;
+        }
+    }
+
+    /**
      * Creates StnryAssetEnrgyUse records from JSON analysis data
      * @param jsonData The JSON string containing analysis results
      * @param recordId The record ID to associate with the energy use records
-     * @return List of created record IDs
+     * @return List of created records with Id and fuel type
      */
     @AuraEnabled
-    public static List<String> createEnergyUseRecords(String jsonData, String recordId) {
+    public static List<CreatedEnergyUse> createEnergyUseRecords(String jsonData, String recordId) {
         // Check permissions first
         if (!Schema.sObjectType.StnryAssetEnrgyUse.isCreateable()) {
             throw new AuraHandledException('Access denied to create StnryAssetEnrgyUse records');
@@ -146,10 +163,9 @@ public with sharing class AIFileAnalysisController {
         if (parsedJson instanceof List<Object>) {
             recordsToInsert = processMultipleSites((List<Object>) parsedJson, recordId);
         } else if (parsedJson instanceof Map<String, Object>) {
-            StnryAssetEnrgyUse newRecord = createEnergyUseRecord((Map<String, Object>) parsedJson, recordId);
-            if (newRecord != null) {
-                recordsToInsert.add(newRecord);
-            }
+            recordsToInsert.addAll(
+                createEnergyUseRecordsForSite((Map<String, Object>) parsedJson, recordId)
+            );
         }
 
         return recordsToInsert;
@@ -167,10 +183,7 @@ public with sharing class AIFileAnalysisController {
         for (Object siteObj : sites) {
             if (siteObj instanceof Map<String, Object>) {
                 Map<String, Object> site = (Map<String, Object>) siteObj;
-                StnryAssetEnrgyUse newRecord = createEnergyUseRecord(site, recordId);
-                if (newRecord != null) {
-                    records.add(newRecord);
-                }
+                records.addAll(createEnergyUseRecordsForSite(site, recordId));
             }
         }
 
@@ -178,12 +191,12 @@ public with sharing class AIFileAnalysisController {
     }
 
     /**
-     * Inserts energy use records and returns created Ids.
+     * Inserts energy use records and returns created Ids with fuel type.
      * @param recordsToInsert List of StnryAssetEnrgyUse to insert
-     * @return List of created record Ids
+     * @return List of created records
      */
-    private static List<String> insertEnergyUseRecords(List<StnryAssetEnrgyUse> recordsToInsert) {
-        List<String> createdRecordIds = new List<String>();
+    private static List<CreatedEnergyUse> insertEnergyUseRecords(List<StnryAssetEnrgyUse> recordsToInsert) {
+        List<CreatedEnergyUse> createdRecords = new List<CreatedEnergyUse>();
 
         if (!recordsToInsert.isEmpty()) {
             // Check FLS permissions for INSERT operation on all fields being set
@@ -197,39 +210,80 @@ public with sharing class AIFileAnalysisController {
 
             insert recordsToInsert;
             for (StnryAssetEnrgyUse record : recordsToInsert) {
-                createdRecordIds.add(record.Id);
+                createdRecords.add(new CreatedEnergyUse(record.Id, record.FuelType));
             }
         }
 
-        return createdRecordIds;
+        return createdRecords;
     }
 
     /**
-     * Helper method to create a single StnryAssetEnrgyUse record from site data
+     * Builds Electricity and Natural Gas records from one JSON site object.
      * @param site Map containing the site data
-     * @param recordId The record ID to associate with the energy use record
-     * @return StnryAssetEnrgyUse record or null if required data is missing
+     * @param recordId The record ID to associate with the energy use records
+     * @return Zero to two records depending on consumption values
      */
-    private static StnryAssetEnrgyUse createEnergyUseRecord(Map<String, Object> site, String recordId) {
+    private static List<StnryAssetEnrgyUse> createEnergyUseRecordsForSite(
+        Map<String, Object> site,
+        String recordId
+    ) {
+        List<StnryAssetEnrgyUse> records = new List<StnryAssetEnrgyUse>();
         try {
             SiteData siteData = extractSiteData(site);
-            StnryAssetEnrgyUse energyUseRecord = new StnryAssetEnrgyUse();
-
-            // Set required fields
-            if (String.isNotBlank(siteData.kilowatts)) {
-                energyUseRecord.FuelConsumption = Decimal.valueOf(siteData.kilowatts);
+            StnryAssetEnrgyUse electricity = buildEnergyUseRecord(
+                siteData,
+                recordId,
+                siteData.kilowatts,
+                'Electricity',
+                null
+            );
+            if (electricity != null) {
+                records.add(electricity);
             }
-
-            energyUseRecord.FuelType = 'Electricity';
-            energyUseRecord.StnryAssetEnvrSrcId = recordId;
-            energyUseRecord.Name = buildRecordName(siteData.account, siteData.dueDate);
-            energyUseRecord.StartDate = parseDueDateString(siteData.dueDate);
-
-            return energyUseRecord;
-
+            StnryAssetEnrgyUse gas = buildEnergyUseRecord(
+                siteData,
+                recordId,
+                siteData.therms,
+                'NaturalGas',
+                'Natural Gas'
+            );
+            if (gas != null) {
+                records.add(gas);
+            }
         } catch (Exception e) {
+            return records;
+        }
+        return records;
+    }
+
+    /**
+     * Builds one energy-use record when consumption is a positive number.
+     * @param siteData Extracted JSON values
+     * @param recordId Parent environmental source Id
+     * @param consumption Fuel consumption string
+     * @param fuelType FuelType picklist value
+     * @param nameSuffix Optional suffix appended to Name
+     * @return Record or null when consumption is missing or not positive
+     */
+    private static StnryAssetEnrgyUse buildEnergyUseRecord(
+        SiteData siteData,
+        String recordId,
+        String consumption,
+        String fuelType,
+        String nameSuffix
+    ) {
+        String normalized = normalizeNumericString(consumption);
+        if (!hasPositiveConsumption(normalized)) {
             return null;
         }
+
+        StnryAssetEnrgyUse energyUseRecord = new StnryAssetEnrgyUse();
+        energyUseRecord.FuelConsumption = Decimal.valueOf(normalized);
+        energyUseRecord.FuelType = fuelType;
+        energyUseRecord.StnryAssetEnvrSrcId = recordId;
+        energyUseRecord.Name = buildRecordName(siteData.account, siteData.dueDate, nameSuffix);
+        energyUseRecord.StartDate = parseDueDateString(siteData.dueDate);
+        return energyUseRecord;
     }
 
     /**
@@ -237,6 +291,7 @@ public with sharing class AIFileAnalysisController {
      */
     private class SiteData {
         String kilowatts;
+        String therms;
         String chargeAmount;
         String dueDate;
         String account;
@@ -248,6 +303,11 @@ public with sharing class AIFileAnalysisController {
 
         SiteData withKilowatts(String kilowatts) {
             this.kilowatts = kilowatts;
+            return this;
+        }
+
+        SiteData withTherms(String therms) {
+            this.therms = therms;
             return this;
         }
 
@@ -275,18 +335,33 @@ public with sharing class AIFileAnalysisController {
     private static SiteData extractSiteData(Map<String, Object> site) {
         return new SiteData()
             .withKilowatts(getStringValue(site.get('kilowatts_consumed')))
+            .withTherms(getStringValue(site.get('therms_consumed')))
             .withChargeAmount(getStringValue(site.get('charge_amount_electricity')))
             .withDueDate(getStringValue(site.get('due_date')))
-            .withAccount(getStringValue(site.get('account')));
+            .withAccount(getStringValue(resolveAccountValue(site)));
     }
 
     /**
-     * Builds a record Name from account and due date.
+     * Prefers account_number from the LLM payload, then account.
+     * @param site Map of parsed JSON key-value pairs
+     * @return Account identifier object or null
+     */
+    private static Object resolveAccountValue(Map<String, Object> site) {
+        Object accountNumber = site.get('account_number');
+        if (accountNumber != null && String.isNotBlank(String.valueOf(accountNumber))) {
+            return accountNumber;
+        }
+        return site.get('account');
+    }
+
+    /**
+     * Builds a record Name from account, due date, and optional fuel suffix.
      * @param account Account name
      * @param dueDate Due date string
-     * @return Concatenated name or null if both blank
+     * @param nameSuffix Optional fuel label
+     * @return Concatenated name or null if all blank
      */
-    private static String buildRecordName(String account, String dueDate) {
+    private static String buildRecordName(String account, String dueDate, String nameSuffix) {
         String recordName = '';
         if (String.isNotBlank(account)) {
             recordName += account;
@@ -294,7 +369,38 @@ public with sharing class AIFileAnalysisController {
         if (String.isNotBlank(dueDate)) {
             recordName += (String.isNotBlank(recordName) ? ' ' : '') + dueDate;
         }
+        if (String.isNotBlank(nameSuffix)) {
+            recordName += (String.isNotBlank(recordName) ? ' ' : '') + nameSuffix;
+        }
         return String.isNotBlank(recordName) ? recordName : null;
+    }
+
+    /**
+     * Strips grouping commas so Decimal.valueOf can parse edited values.
+     * @param value Raw numeric string
+     * @return Normalized numeric string or original blank value
+     */
+    private static String normalizeNumericString(String value) {
+        if (String.isBlank(value)) {
+            return value;
+        }
+        return value.replace(',', '').trim();
+    }
+
+    /**
+     * True when the value parses to a number greater than zero.
+     * @param value Normalized numeric string
+     * @return Whether consumption should create a record
+     */
+    private static Boolean hasPositiveConsumption(String value) {
+        if (String.isBlank(value)) {
+            return false;
+        }
+        try {
+            return Decimal.valueOf(value) > 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
