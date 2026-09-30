@@ -10,13 +10,21 @@
 
 <div align="center">
 
-[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com?owner=salesforce-misc&repo=NZC-LLM-Bill-Ingestor&ref=main)
+[![Deploy to Salesforce](https://img.shields.io/badge/Deploy%20to%20Salesforce-00A1E0?style=for-the-badge&logo=salesforce&logoColor=white)](https://githubsfdeploy.herokuapp.com/app/githubdeploy/salesforce-misc/NZC-LLM-Bill-Ingestor?ref=main)
 
-**One-click deployment to your Salesforce org**
+**One-click deployment of [`main`](https://github.com/salesforce-misc/NZC-LLM-Bill-Ingestor) from the upstream repository**
 
-> **Note:** If you encounter authentication issues, you may need to authorize the GitHub Salesforce Deploy Tool to access the `salesforce-misc` organization. Alternatively, use the [Salesforce CLI deployment method](#-option-3-salesforce-cli-deployment) below.
+> **Note:** The button deploys `salesforce-misc/NZC-LLM-Bill-Ingestor` at `main`. If login fails, authorize the GitHub Salesforce Deploy Tool for the `salesforce-misc` organization, or use the [Salesforce CLI deployment method](#-option-3-salesforce-cli-deployment) below.
 
 </div>
+
+---
+
+## 🆕 New Features
+
+- **Review before create**: Correct the extracted electricity and gas values, then create Energy Use records from the reviewed numbers.
+- **Links to new records**: After a successful create, the confirmation toast links to each new Energy Use record.
+- **Name is always filled in**: Energy Use `Name` is required. It uses the account number and due date when those are present. If both are blank, the record is still created and named `Electricity` or `Natural Gas`.
 
 ---
 
@@ -32,7 +40,7 @@
 
 - **Net Zero Cloud Compatible**: Seamlessly integrates with Salesforce Net Zero Cloud for sustainability tracking
 - **Lightning Web Components**: Modern, responsive UI built with Lightning Web Components
-- **Energy Use Record Creation**: Automatically creates `StnryAssetEnrgyUse` records from analyzed data. `Name` is required. It is built from the account number and due date. When both are blank, the record is still created and named for the fuel type (`Electricity` or `Natural Gas`).
+- **Energy Use Record Creation**: Automatically creates `StnryAssetEnrgyUse` records from analyzed data
 
 ### 📊 **Energy Management**
 
