@@ -148,4 +148,34 @@ private class AIFileAnalysisControllerTest {
         System.assertEquals(1, created.size(), 'Only a Natural Gas record should be created');
         System.assertEquals('NaturalGas', created[0].fuelType);
     }
+
+    @IsTest
+    static void createEnergyUseRecords_namesElectricityWhenAccountAndDueDateBlank() {
+        StnryAssetEnvrSrc source = new StnryAssetEnvrSrc(Name = 'Blank Name Source');
+        insert source;
+
+        String jsonData = JSON.serialize(
+            new Map<String, Object>{
+                'account' => '',
+                'account_number' => '',
+                'due_date' => '',
+                'kilowatts_consumed' => '1010',
+                'therms_consumed' => ''
+            }
+        );
+
+        Test.startTest();
+        List<AIFileAnalysisController.CreatedEnergyUse> created =
+            AIFileAnalysisController.createEnergyUseRecords(jsonData, source.Id);
+        Test.stopTest();
+
+        System.assertEquals(1, created.size(), 'Electricity should still be created');
+        StnryAssetEnrgyUse createdRow = [
+            SELECT Name, FuelType
+            FROM StnryAssetEnrgyUse
+            WHERE Id = :created[0].id
+        ];
+        System.assertEquals('Electricity', createdRow.FuelType);
+        System.assertEquals('Electricity', createdRow.Name);
+    }
 }

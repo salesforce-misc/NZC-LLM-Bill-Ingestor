@@ -281,7 +281,10 @@ public with sharing class AIFileAnalysisController {
         energyUseRecord.FuelConsumption = Decimal.valueOf(normalized);
         energyUseRecord.FuelType = fuelType;
         energyUseRecord.StnryAssetEnvrSrcId = recordId;
-        energyUseRecord.Name = buildRecordName(siteData.account, siteData.dueDate, nameSuffix);
+        energyUseRecord.Name = nameOrFuelFallback(
+            buildRecordName(siteData.account, siteData.dueDate, nameSuffix),
+            fuelType
+        );
         energyUseRecord.StartDate = parseDueDateString(siteData.dueDate);
         return energyUseRecord;
     }
@@ -373,6 +376,22 @@ public with sharing class AIFileAnalysisController {
             recordName += (String.isNotBlank(recordName) ? ' ' : '') + nameSuffix;
         }
         return String.isNotBlank(recordName) ? recordName : null;
+    }
+
+    /**
+     * Name is required on StnryAssetEnrgyUse. Bills can have consumption with a blank account and due date.
+     * @param recordName Name built from account, due date, and suffix
+     * @param fuelType FuelType picklist value
+     * @return recordName, or the fuel label when that name is blank
+     */
+    private static String nameOrFuelFallback(String recordName, String fuelType) {
+        if (String.isNotBlank(recordName)) {
+            return recordName;
+        }
+        if (fuelType == 'NaturalGas') {
+            return 'Natural Gas';
+        }
+        return String.isNotBlank(fuelType) ? fuelType : 'Energy Use';
     }
 
     /**

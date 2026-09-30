@@ -32,7 +32,7 @@
 
 - **Net Zero Cloud Compatible**: Seamlessly integrates with Salesforce Net Zero Cloud for sustainability tracking
 - **Lightning Web Components**: Modern, responsive UI built with Lightning Web Components
-- **Energy Use Record Creation**: Automatically creates `StnryAssetEnrgyUse` records from analyzed data
+- **Energy Use Record Creation**: Automatically creates `StnryAssetEnrgyUse` records from analyzed data. `Name` is required. It is built from the account number and due date. When both are blank, the record is still created and named for the fuel type (`Electricity` or `Natural Gas`).
 
 ### 📊 **Energy Management**
 
@@ -153,7 +153,7 @@ After deploying with any method above, complete these manual steps:
 1. **Upload** a bill file using the Image Analyzer component
 2. **Click** "Analyze with AI" to process the document
 3. **Review** the extracted data in the results panel
-4. **Click** "Create Energy Records" to automatically create `StnryAssetEnrgyUse` records
+4. **Click** "Create Energy Records" to automatically create `StnryAssetEnrgyUse` records. A bill with kilowatt-hours but no account number and no due date still creates the electricity record. Its name is `Electricity`.
 5. **Monitor** the progress and view created record links
 
 ### 📊 **Viewing Results**
